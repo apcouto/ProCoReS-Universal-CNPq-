@@ -1,10 +1,14 @@
-# Artefatos de Pesquisa: Redes Sociais, Toxicidade, Política e Música
+# Artefatos de Pesquisa: ProCoReS - Caracterização e Modelagem de Processos de Contágio em Redes Sociais de Diferentes Domínios
 
-Repositório-índice que reúne **código, bases de dados e referências** de 31 artigos
-publicados entre 2022 e 2026 com participação de Ana Paula Couto da Silva (DCC/UFMG)
-e colaboradores.
 
-O código **não é copiado** para cá. Os repositórios originais entram como
+
+Repositório que reúne **código, bases de dados e referências** dos artigos publicados
+durante a vigência do Projeto Universal-CNPq ProCoRes (402711/2021-1) coordenado pela
+professora Ana Paula Couto (DCC/UFMG) e participação dos professores: Mirella M. Moro,
+Gisele Pappa, Michele Brandão, Carina Dorneles, Clodoveu Davis, Eric Araújo.
+
+
+O código compartilhado nos artigos **não está** neste repositório. Os repositórios originais entram como
 `git submodule`, o que preserva autoria, histórico e licença de cada projeto.
 
 ## Estrutura
