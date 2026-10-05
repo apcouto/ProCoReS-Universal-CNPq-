@@ -4,8 +4,8 @@
 
 Repositório que reúne **código, bases de dados e referências** dos artigos publicados
 durante a vigência do Projeto Universal-CNPq ProCoRes (402711/2021-1) coordenado pela
-professora Ana Paula Couto (DCC/UFMG) e participação dos professores: Mirella M. Moro,
-Gisele Pappa, Michele Brandão, Carina Dorneles, Clodoveu Davis, Eric Araújo.
+professora Ana Paula Couto (DCC/UFMG) e participação dos professores: Mirella M. Moro (DCC/UFMG),
+Gisele Pappa (DCC/UFMG), Michele Brandão (DCC/UFMG), Carina Dorneles (UFSC), Clodoveu Davis (DCC/UFMG), Eric Araújo (UFLA).
 
 
 O código compartilhado nos artigos **não está** neste repositório. Os repositórios originais entram como
