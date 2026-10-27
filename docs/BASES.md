@@ -20,19 +20,8 @@
 |---|---|---|---|
 | bertabaporu-toxicity-reddit-ptbr | P02 (também usado em P03) | [Hugging Face](https://huggingface.co/giovanaPcarvalho/bertabaporu-toxicity-reddit-ptbr) | BERTabaporu ajustado para toxicidade em comentários do Reddit brasileiro |
 
-## 3. Bases mencionadas mas não publicadas
 
-| Base | Artigo | Situação |
-|---|---|---|
-| 883.953 árvores de discussão do Reddit BR | P02 | Listada como contribuição do artigo, sem link. Não encontrada no GitHub nem no Hugging Face |
-| Corpus completo do Reddit BR 2022 (~6,5 mi comentários) | P01–P06 | Apenas a amostra anotada foi publicada |
-| Dados de usuários tóxicos | P03 | Mediante solicitação aos autores |
-| Comentários de vacinas no YouTube (2018–2024) | P19 | Não verificado |
-| Telegram jan/2023 | P11 | Sem link no artigo |
-| Séries de popularidade Spotify/TikTok | P24, P25 | Não redistribuíveis pelos termos das plataformas |
-| Google Trends por artista | P28 | Coleta manual, sem link |
-
-## 4. Bases de terceiros reutilizadas
+## 3. Bases de terceiros reutilizadas
 
 | Base | Usada em | Observação |
 |---|---|---|
