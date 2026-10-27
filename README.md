@@ -59,6 +59,7 @@ Legenda da coluna **Artefatos**: 💻 código no GitHub · 🗄️ base de dados
 
  Artigo | Venue | Artefatos |
 |---|---|---|---|
+ 
  Toxic Content Detection in online social networks: a new dataset from Brazilian Reddit Communities | PROPOR 2024 | 💻 🗄️ |
  Diálogos Tóxicos: Gatilhos e Padrões de Interação no Reddit Brasileiro | PROPOR 2026 | 🤖 |
  Caracterização e Comportamento de Usuários Tóxicos em Subreddits Brasileiros | BraSNAM 2026 | ✉️ |
@@ -68,6 +69,7 @@ Legenda da coluna **Artefatos**: 💻 código no GitHub · 🗄️ base de dados
 
  Artigo | Venue | Artefatos |
 |---|---|---|---|
+ 
  Mapping the Political Discourse in the Brazilian Chamber of Deputies | ICWSM 2026 | 💻 |
  A Network-Driven Framework for Bidimensional Analysis of Information Dissemination on Social Media Platforms | JIS 2025 | 💻 🗄️ |
  On network backbone extraction for modeling online collective behavior | PLoS One 2022 | 💻 🗄️ |
@@ -86,8 +88,9 @@ A Comprehensive Dataset of Brazilian Fact-Checking Stories | JIDM 2022 | 🗄️
 
 ### Outros temas
 
- Artigo | Venue | Artefatos |
-|---|---|---|---|
+ Artigo | Venue | Artefatos 
+ |---|---|---|---|
+ 
  A quantitative analysis of the impact of explicit incorporation of recency, seasonality and model specialization into fine-grained tourism demand prediction models | PLoS One 2022 | 🗄️ |
 
 
@@ -98,6 +101,7 @@ Bases de dados e modelos em **[docs/BASES.md](docs/BASES.md)**.
 
 | Situação | Artigos |
 |---|---|
+
 | Código no GitHub | 6 (P01, P05, P09, P12, P13, P14) |
 | Base de dados pública | 9 (P01, P05, P12, P13, P15, P18, P21, P23, P30) |
 | Apenas modelo publicado | 1 (P02) |
