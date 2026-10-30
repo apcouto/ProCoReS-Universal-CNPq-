@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ProCoReS · Contágio em Redes Sociais</title>
+<meta name="description" content="ProCoReS: caracterização e modelagem de processos de contágio em redes sociais de diferentes domínios. Projeto CNPq Universal (DCC/UFMG).">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f6f2; --surface:#ffffff; --ink:#1c2326; --muted:#5b6669; --line:#e2e0d8;
+  --accent:#0f6e6a; --accent-ink:#ffffff; --hot:#d9583b; --rec:#8a9a9d; --chip:#eef3f2;
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 6px 24px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#111617; --surface:#182022; --ink:#e7ecea; --muted:#9aa8a9; --line:#2a3537;
+    --accent:#4cc2b8; --accent-ink:#0c1414; --hot:#ff8466; --rec:#5f6e70; --chip:#1f2b2c;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 24px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111617; --surface:#182022; --ink:#e7ecea; --muted:#9aa8a9; --line:#2a3537;
+  --accent:#4cc2b8; --accent-ink:#0c1414; --hot:#ff8466; --rec:#5f6e70; --chip:#1f2b2c;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 24px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:650;line-height:1.15;margin:0 0 .5em}
+h2{font-size:clamp(1.6rem,3vw,2.2rem)}
+h3{font-size:1.15rem;font-family:Inter,sans-serif;font-weight:600}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+section{padding:72px 0;border-top:1px solid var(--line)}
+.eyebrow{font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:.6em}
+.lead{font-size:1.1rem;color:var(--muted);max-width:68ch}
+
+/* nav */
+header.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:16px;height:60px}
+.brand{font-family:Fraunces,serif;font-weight:650;font-size:1.2rem;color:var(--ink);text-decoration:none;white-space:nowrap}
+.brand span{color:var(--accent)}
+nav.menu{display:flex;gap:4px;margin-left:auto;overflow-x:auto;scrollbar-width:none}
+nav.menu::-webkit-scrollbar{display:none}
+nav.menu a{color:var(--muted);text-decoration:none;font-size:.92rem;padding:6px 10px;border-radius:8px;white-space:nowrap}
+nav.menu a:hover{color:var(--ink);background:var(--chip)}
+.themebtn{display:grid;place-items:center;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;width:36px;height:36px;cursor:pointer;flex:none}
+@media (max-width:760px){header.top .wrap{flex-wrap:wrap;height:auto;padding-top:10px;padding-bottom:6px;row-gap:4px}.themebtn{margin-left:auto}nav.menu{order:3;width:100%;margin-left:0}}
+
+/* hero */
+.hero{position:relative;padding:88px 0 64px;border-top:none;overflow:hidden}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%;opacity:.9}
+.hero .wrap{position:relative}
+.hero h1{font-size:clamp(2.2rem,5.5vw,4rem);max-width:15ch}
+.hero .sub{font-size:clamp(1.05rem,2vw,1.25rem);max-width:56ch;color:var(--muted)}
+.hero .card{background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(3px);display:inline-block;border-radius:16px;padding:8px 0}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.85rem;color:var(--muted);margin-top:18px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:10px;font-weight:600;text-decoration:none;font-size:.95rem}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{border:1px solid var(--line);color:var(--ink);background:var(--surface)}
+.funding{margin-top:28px;font-size:.88rem;color:var(--muted)}
+
+/* grids */
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:900px){.g3,.g4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:600px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--shadow)}
+.box p{margin:.4em 0 0;color:var(--muted)}
+.two{display:grid;grid-template-columns:1.2fr 1fr;gap:40px;align-items:start}
+@media (max-width:860px){.two{grid-template-columns:1fr}}
+ul.clean{padding-left:1.1em;margin:.6em 0}
+ul.clean li{margin:.3em 0}
+
+/* activities */
+.act{counter-reset:a}
+.act .box h3::before{counter-increment:a;content:counter(a,decimal-leading-zero);display:block;font-family:Fraunces,serif;color:var(--accent);font-size:1.4rem;margin-bottom:4px}
+.act .box ul{margin:.6em 0 0;padding-left:1.1em;color:var(--muted);font-size:.94rem}
+
+/* numbers */
+.num{font-family:Fraunces,serif;font-size:2.4rem;font-weight:650;color:var(--accent);line-height:1}
+.numlabel{font-size:.9rem;color:var(--muted);margin-top:6px}
+.prize{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}
+.prize:last-child{border-bottom:none}
+.prize .yr{font-weight:600;color:var(--hot);min-width:3.2em}
+
+/* publications */
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:20px 0 8px}
+.filters input,.filters select{font:inherit;font-size:.92rem;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.filters input{flex:1 1 240px;min-width:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 18px}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 12px;font-size:.85rem;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.count{font-size:.9rem;color:var(--muted)}
+.pub{padding:16px 0;border-bottom:1px solid var(--line)}
+.pub .t{font-weight:600}
+.pub .a{color:var(--muted);font-size:.92rem}
+.pub .v{font-size:.92rem;font-style:italic}
+.pub .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;align-items:center}
+.tag{font-size:.75rem;background:var(--chip);color:var(--ink);border-radius:6px;padding:2px 8px}
+.tag.type{border:1px solid var(--line);background:transparent}
+.linkbtn{font:inherit;font-size:.82rem;border:1px solid var(--line);background:var(--surface);color:var(--accent);border-radius:6px;padding:3px 9px;cursor:pointer;text-decoration:none}
+pre.bib{display:none;white-space:pre-wrap;word-break:break-word;background:var(--chip);border-radius:10px;padding:12px;font-size:.78rem;margin:10px 0 0}
+.pub.open pre.bib{display:block}
+
+/* data */
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;color:var(--muted);font-size:.82rem;text-transform:uppercase;letter-spacing:.05em}
+.tablewrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:4px 12px}
+
+/* team */
+.person{display:flex;gap:12px;align-items:center}
+.avatar{flex:none;width:42px;height:42px;border-radius:50%;background:var(--chip);color:var(--accent);display:grid;place-items:center;font-weight:600;font-size:.9rem}
+.person small{display:block;color:var(--muted)}
+.namelist{columns:3 220px;column-gap:24px;padding-left:0;list-style:none;margin:0}
+.namelist li{break-inside:avoid;padding:6px 0;border-bottom:1px dashed var(--line)}
+.namelist small{color:var(--muted)}
+
+footer{padding:40px 0;color:var(--muted);font-size:.88rem;border-top:1px solid var(--line)}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:8px;font-size:.88rem;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#inicio">Pro<span>CoReS</span></a>
+    <nav class="menu" aria-label="Seções">
+      <a href="#projeto">Projeto</a>
+      <a href="#atividades">Atividades</a>
+      <a href="#resultados">Resultados</a>
+      <a href="#publicacoes">Publicações</a>
+      <a href="#dados">Código e dados</a>
+      <a href="#equipe">Equipe</a>
+      <a href="#cooperacao">Cooperação</a>
+      <a href="#contato">Contato</a>
+    </nav>
+    <button class="themebtn" id="themebtn" aria-label="Alternar tema claro/escuro" title="Alternar tema"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg></button>
+  </div>
+</header>
+
+<main>
+<section class="hero" id="inicio">
+  <canvas id="net" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div class="card">
+      <div class="eyebrow">Projeto CNPq Universal · DCC/UFMG</div>
+      <h1>Contágio em redes sociais de diferentes domínios</h1>
+      <p class="sub">O ProCoReS caracteriza e modela como informação, cultura e comportamentos se espalham em redes sociais online, propondo modelos matemáticos, estatísticos, de agentes e de aprendizado de máquina parametrizados por dados reais.</p>
+      <div class="legend" aria-hidden="true">
+        <span><i class="dot" style="background:var(--accent)"></i>suscetível</span>
+        <span><i class="dot" style="background:var(--hot)"></i>infectado</span>
+        <span><i class="dot" style="background:var(--rec)"></i>recuperado</span>
+      </div>
+      <div class="btns">
+        <a class="btn primary" href="#publicacoes">Ver publicações</a>
+        <a class="btn ghost" href="#dados">Código e bases de dados</a>
+      </div>
+      <p class="funding">Chamada CNPq/MCTI/FNDCT Nº 18/2021 – Universal, Faixa B (Grupos Consolidados) · Processo 402711/2021-1 · 2022–2025</p>
+    </div>
+  </div>
+</section>
+
+<section id="projeto">
+  <div class="wrap two">
+    <div>
+      <div class="eyebrow">O projeto</div>
+      <h2>Por que estudar contágio em redes?</h2>
+      <p>Redes sociais são a base da organização da sociedade, formadas por dois elementos: pessoas e suas conexões (familiares, de amizade, de trabalho). Essas conexões podem ser efêmeras ou duradouras, casuais ou intensas, pessoais ou anônimas. Atrelados a elas estão processos de contágio, ou fluxos que passam pelas ligações entre as pessoas: doença, dinheiro, conhecimento, comportamento.</p>
+      <p>Para modelar redes e contágio, a maioria das soluções atuais utiliza grafos. Porém, eles não são totalmente realistas, e novos modelos devem permitir representar diferentes classes de indivíduos e conexões, a ligação entre processos que ocorrem ao mesmo tempo e conexões com dois ou mais indivíduos simultaneamente.</p>
+      <p>Entender como as conexões são formadas e como os fluxos permeiam tais redes é fundamental para entender como nossa sociedade se organiza e evolui.</p>
+    </div>
+    <div class="box">
+      <h3>Objetivo</h3>
+      <p>Caracterizar processos de contágio em redes sociais online e propor modelos que considerem múltiplos aspectos complexos desses processos, parametrizados por fontes de dados como redes sociais online, mobilidade e colaborações.</p>
+      <h3 style="margin-top:18px">Processos estudados</h3>
+      <ul class="clean">
+        <li><b>Difusão de informação</b>, em especial política e de saúde</li>
+        <li><b>Cultura</b>, com foco na viralidade e no sucesso de músicas</li>
+        <li><b>Comportamento antissocial</b>, como toxicidade e hostilidade</li>
+      </ul>
+      <h3 style="margin-top:18px">Plataformas</h3>
+      <p>Reddit, Twitter/X, Telegram, YouTube, Spotify, TikTok e Instagram.</p>
+    </div>
+  </div>
+</section>
+
+<section id="atividades">
+  <div class="wrap">
+    <div class="eyebrow">Atividades e contribuições</div>
+    <h2>Do levantamento do estado da arte à comparação de modelos</h2>
+    <p class="lead">As atividades científicas do projeto e as principais contribuições ao estado da arte em cada uma delas.</p>
+    <div class="grid g3 act" style="margin-top:28px">
+      <div class="box"><h3>Revisão da literatura</h3><p>Levantamento sobre processos de contágio complexo e seus domínios de aplicação.</p>
+        <ul><li>Revisão sistemática sobre viralidade musical em plataformas sociais</li><li>Sistematização de técnicas de extração de <i>backbones</i> e da reprodutibilidade em detecção de comunidades</li><li>Identificação da escassez de dados rotulados em português</li></ul></div>
+      <div class="box"><h3>Processos de contágio</h3><p>Definição dos processos que orientaram o projeto.</p>
+        <ul><li>Arcabouço bidimensional (volume × velocidade) com quatro perfis de propagação</li><li>Viralidade e sucesso como processos de contágio distintos</li><li>Gatilhos e usuários reincidentes como unidades de análise da toxicidade</li></ul></div>
+      <div class="box"><h3>Coleta de dados</h3><p>Dados de diversas plataformas, parte deles disponibilizada publicamente.</p>
+        <ul><li>~6,5 milhões de comentários do Reddit, com bases rotuladas de toxicidade e sentimento</li><li>Telegram, Twitter/X, YouTube e Câmara dos Deputados</li><li>Séries do Spotify e do TikTok (cooperação com a PoliTO)</li></ul></div>
+      <div class="box"><h3>Caracterização</h3><p>Padrões que subsidiaram os modelos propostos.</p>
+        <ul><li>~5% dos usuários tóxicos produzem mais da metade do conteúdo tóxico</li><li>Coordenação no Telegram em torno de 8 de janeiro de 2023</li><li>Viralidade musical mais rápida, mais curta e com múltiplos picos</li></ul></div>
+      <div class="box"><h3>Modelos</h3><p>Abordagens epidêmicas, causais, de redes e de aprendizado de máquina.</p>
+        <ul><li>SIR e SEIR por ondas para a difusão musical</li><li>Granger, PCMCI e ARIMAX para fatores causais e externos</li><li>Modelo de toxicidade em português (BERTabaporu) no Hugging Face</li></ul></div>
+      <div class="box"><h3>Comparação de modelos</h3><p>Avaliação sistemática com métricas adequadas a cada problema.</p>
+        <ul><li>SIR, SEIR, SEIRS e Open SEIRS versus ARIMA, SVR e Prophet</li><li>Dez classificadores de sentimento comparados</li><li>Dez técnicas de <i>backbone</i> e métodos de amostragem avaliados por NMI</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section id="resultados">
+  <div class="wrap">
+    <div class="eyebrow">Resultados em números</div>
+    <h2>Produção, formação e artefatos</h2>
+    <div class="grid g4" style="margin-top:24px">
+      <div class="box"><div class="num">16</div><div class="numlabel">artigos em periódicos</div></div>
+      <div class="box"><div class="num">36</div><div class="numlabel">artigos completos em conferências</div></div>
+      <div class="box"><div class="num">13</div><div class="numlabel">resumos</div></div>
+      <div class="box"><div class="num">1</div><div class="numlabel">capítulo de livro</div></div>
+      <div class="box"><div class="num">2</div><div class="numlabel">doutores formados</div></div>
+      <div class="box"><div class="num">8</div><div class="numlabel">mestres formados</div></div>
+      <div class="box"><div class="num">16</div><div class="numlabel">alunos de iniciação científica</div></div>
+      <div class="box"><div class="num">15</div><div class="numlabel">TCCs concluídos</div></div>
+      <div class="box"><div class="num">9</div><div class="numlabel">bases de dados públicas</div></div>
+      <div class="box"><div class="num">6</div><div class="numlabel">repositórios de código</div></div>
+      <div class="box"><div class="num">1</div><div class="numlabel">modelo no Hugging Face</div></div>
+      <div class="box"><div class="num">5</div><div class="numlabel">prêmios</div></div>
+    </div>
+    <div class="two" style="margin-top:40px">
+      <div>
+        <h3>Prêmios</h3>
+        <div class="prize"><span class="yr">2026</span><span><b>Melhor Tese</b> · Concurso de Teses e Dissertações em Banco de Dados (SBC) · Gabriel P. Oliveira</span></div>
+        <div class="prize"><span class="yr">2026</span><span><b>Melhor Artigo</b> · BraSNAM · Caracterização e Comportamento de Usuários Tóxicos em Subreddits Brasileiros</span></div>
+        <div class="prize"><span class="yr">2026</span><span><b>Melhor Artigo</b> · MinDS/SBCAS · Caracterização da dinâmica informacional sobre semaglutida no YouTube</span></div>
+        <div class="prize"><span class="yr">2026</span><span><b>Prêmio SOL Reprodutibilidade</b> · RBR e SBC · A Network-Driven Framework for Bidimensional Analysis of Information Dissemination</span></div>
+        <div class="prize"><span class="yr">2024</span><span><b>Melhor Artigo</b> · SEMISH (CSBC) · Analyzing the temporal relation between virality and success in the Brazilian music market</span></div>
+      </div>
+      <div class="box">
+        <h3>Distribuição das publicações</h3>
+        <div id="themebars"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="publicacoes">
+  <div class="wrap">
+    <div class="eyebrow">Publicações</div>
+    <h2>Artigos do projeto</h2>
+    <p class="lead">Lista dos artigos publicados pela equipe, com links para o texto e o BibTeX de cada um.</p>
+    <div class="filters">
+      <input id="q" type="search" placeholder="Buscar por título, autor ou veículo" aria-label="Buscar publicações">
+      <select id="ftype" aria-label="Tipo"><option value="">Todos os tipos</option></select>
+      <select id="fyear" aria-label="Ano"><option value="">Todos os anos</option></select>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="Temas"></div>
+    <div class="count" id="count"></div>
+    <div id="publist"></div>
+    <p style="margin-top:20px"><a class="linkbtn" href="references.bib" download>Baixar todas as referências (.bib)</a></p>
+  </div>
+</section>
+
+<section id="dados">
+  <div class="wrap">
+    <div class="eyebrow">Ciência aberta</div>
+    <h2>Código e bases de dados</h2>
+    <p class="lead">Repositórios, bases de dados e modelos disponibilizados publicamente pelo projeto.</p>
+    <h3 style="margin-top:28px">Repositórios de código</h3>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Repositório</th><th>Conteúdo</th><th>Artigo</th></tr></thead>
+      <tbody>
+        <tr><td><a href="https://github.com/luizhenriqueds/reddit-br-toxicity-dataset">reddit-br-toxicity-dataset</a></td><td>Base de toxicidade do Reddit brasileiro</td><td>PROPOR 2024</td></tr>
+        <tr><td><a href="https://github.com/SentPortugueseDataset/SentimentAnalysisReddit">SentimentAnalysisReddit</a></td><td>Base e avaliação de classificadores de sentimento</td><td>JIS 2025</td></tr>
+        <tr><td><a href="https://github.com/flaviosoriano/multifaceted-political-analysis">multifaceted-political-analysis</a></td><td>Análise do discurso na Câmara dos Deputados</td><td>ICWSM 2026</td></tr>
+        <tr><td><a href="https://github.com/gseovana/bidimensional-network-backbone-framework">bidimensional-network-backbone-framework</a></td><td>Arcabouço bidimensional de disseminação</td><td>JIS 2025</td></tr>
+        <tr><td><a href="https://github.com/chgferreira/backbone_extraction">backbone_extraction</a></td><td>Extração de <i>backbones</i> de redes</td><td>PLoS One 2022</td></tr>
+        <tr><td><a href="https://github.com/rainara-araujo/network-sampling-communities">network-sampling-communities</a></td><td>Amostragem e detecção de comunidades</td><td>SBSI 2025</td></tr>
+      </tbody>
+    </table></div>
+    <h3 style="margin-top:28px">Bases de dados</h3>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Base</th><th>Conteúdo</th><th>Onde obter</th></tr></thead>
+      <tbody>
+        <tr><td>Reddit BR Toxicity</td><td>2.500 comentários de subreddits brasileiros rotulados quanto à toxicidade</td><td><a href="https://github.com/luizhenriqueds/reddit-br-toxicity-dataset">GitHub</a></td></tr>
+        <tr><td>Sentimento no Reddit BR</td><td>2.000 comentários com rótulos manuais de sentimento</td><td><a href="https://github.com/SentPortugueseDataset/SentimentAnalysisReddit">GitHub</a></td></tr>
+        <tr><td>Redes bidimensionais (Twitter/X e Telegram)</td><td>IDs de tweets, redes, <i>backbones</i> e classificação de arestas</td><td><a href="https://github.com/gseovana/bidimensional-network-backbone-framework">GitHub</a></td></tr>
+        <tr><td>Redes do Instagram e WhatsApp</td><td>Dados dos estudos de caso de extração de <i>backbones</i></td><td><a href="https://github.com/chgferreira/backbone_extraction">GitHub</a></td></tr>
+        <tr><td>Propaganda eleitoral antecipada 2022</td><td>Dados do Twitter no período pré-eleitoral de 2022</td><td><a href="https://zenodo.org/record/7976332">Zenodo</a></td></tr>
+        <tr><td>Feminismo no Twitter</td><td>Tweets sobre feminismo (set/2022 a fev/2023)</td><td><a href="https://zenodo.org/record/7971443">Zenodo</a></td></tr>
+        <tr><td>Covid Data Analytics</td><td>Bases oficiais e não oficiais sobre a COVID-19 no Brasil</td><td><a href="https://doi.org/10.5281/zenodo.5176798">Zenodo</a></td></tr>
+        <tr><td>FactCenter</td><td>11.647 checagens de fatos de seis agências brasileiras</td><td><a href="https://doi.org/10.5281/zenodo.5191798">Zenodo</a></td></tr>
+        <tr><td>FISETIO</td><td>Visitas, clima e avaliações de atrações turísticas</td><td><a href="https://doi.org/10.1016/j.dib.2019.104906">Data in Brief</a></td></tr>
+      </tbody>
+    </table></div>
+    <div class="box" style="margin-top:20px">
+      <h3>Modelo publicado</h3>
+      <p><a href="https://huggingface.co/giovanaPcarvalho/bertabaporu-toxicity-reddit-ptbr">bertabaporu-toxicity-reddit-ptbr</a>: BERTabaporu ajustado para detecção de toxicidade em comentários do Reddit brasileiro.</p>
+    </div>
+  </div>
+</section>
+
+<section id="equipe">
+  <div class="wrap">
+    <div class="eyebrow">Equipe</div>
+    <h2>Pesquisadores e estudantes</h2>
+    <div class="grid g3" style="margin-top:24px">
+      <div class="box person"><div class="avatar">AP</div><div><b>Ana Paula Couto da Silva</b><small>Coordenadora · DCC/UFMG</small></div></div>
+      <div class="box person"><div class="avatar">MM</div><div><b>Mirella M. Moro</b><small>DCC/UFMG</small></div></div>
+      <div class="box person"><div class="avatar">GP</div><div><b>Gisele L. Pappa</b><small>DCC/UFMG</small></div></div>
+      <div class="box person"><div class="avatar">CD</div><div><b>Clodoveu Davis Jr.</b><small>DCC/UFMG</small></div></div>
+      <div class="box person"><div class="avatar">AL</div><div><b>Anísio M. Lacerda</b><small>DCC/UFMG</small></div></div>
+      <div class="box person"><div class="avatar">CF</div><div><b>Carina F. Dorneles</b><small>UFSC</small></div></div>
+      <div class="box person"><div class="avatar">MB</div><div><b>Michele A. Brandão</b><small><!-- CONFIRMAR instituição -->Pesquisadora</small></div></div>
+      <div class="box person"><div class="avatar">EA</div><div><b>Eric F. de Mello Araújo</b><small><!-- CONFIRMAR instituição -->Pesquisador</small></div></div>
+    </div>
+    <h3 style="margin-top:32px">Colaboradores</h3>
+    <p class="lead" style="font-size:1rem">Carlos H. G. Ferreira (UFOP), Jussara M. Almeida (DCC/UFMG), Adriana S. Pagano (FALE/UFMG), Fabricio Murai, Luca Vassio e Marco Mellia (Politecnico di Torino).</p>
+    <h3 style="margin-top:28px">Estudantes</h3>
+    <!-- CONFIRMAR lista de estudantes e níveis -->
+    <ul class="namelist">
+      <li>Gabriel P. Oliveira <small>· doutorado (2025)</small></li>
+      <li>Luiz Henrique Quevedo Lima <small>· mestrado (2025)</small></li>
+      <li>Larissa Gomes Malagoli <small>· mestrado (2025)</small></li>
+      <li>Otávio Venâncio <small>· mestrado (2025)</small></li>
+      <li>Rainara Araújo <small>· mestrado (2024)</small></li>
+      <li>Fernanda Luiza Tobias <small>· mestrado (2026)</small></li>
+      <li>Giovana Piorino <small>· mestrado</small></li>
+      <li>Gustavo Cunha <small>· mestrado</small></li>
+      <li>Beatriz Ferreira <small>· mestrado</small></li>
+      <li>Geovana S. Oliveira <small>· pós-graduação (UFOP)</small></li>
+      <li>Marco Antônio de A. Machado <small>· IC e TCC</small></li>
+      <li>Gabriela A. Fonseca <small>· TCC</small></li>
+      <li>Vitor Moreira <small>· IC</small></li>
+      <li>Beatriz R. G. Barbosa <small>· IC</small></li>
+      <li>Cecília Junqueira <small>· IC</small></li>
+    </ul>
+  </div>
+</section>
+
+<section id="cooperacao">
+  <div class="wrap two">
+    <div>
+      <div class="eyebrow">Cooperação internacional</div>
+      <h2>Politecnico di Torino</h2>
+      <p>O projeto se beneficiou da cooperação de longa data da coordenadora com a Politecnico di Torino (Itália), iniciada em 2008. O doutorado-sanduíche de Gabriel Oliveira no grupo SmartData@PoliTO permitiu aplicar os modelos epidemiológicos de viralidade a dados do TikTok, coletados por meio da <i>Research API</i> da plataforma.</p>
+      <p>Em 2026, a coordenadora realizou uma visita técnica ao grupo SmartData@PoliTO, coordenado pelos professores Marco Mellia e Luca Vassio, e aos grupos dos professores Michela Meo e Emilio Leonardi, na qual foram iniciadas novas frentes de pesquisa.</p>
+    </div>
+    <div class="box">
+      <h3>Frentes iniciadas em 2026</h3>
+      <ul class="clean">
+        <li>Modelagem da viralidade em plataformas digitais (Spotify e TikTok)</li>
+        <li>Identificação de trechos viários perigosos com telemetria veicular e OpenStreetMap</li>
+        <li>Dados de redes móveis e de redes sociais para o planejamento urbano</li>
+        <li>Detecção multimodal de posicionamento em redes sociais</li>
+        <li>IA generativa e produção de conteúdo: custo, qualidade e popularidade</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="contato">
+  <div class="wrap two">
+    <div>
+      <div class="eyebrow">Contato</div>
+      <h2>Fale com a equipe</h2>
+      <p><b>Profa. Ana Paula Couto da Silva</b><br>Departamento de Ciência da Computação<br>Universidade Federal de Minas Gerais<br>Av. Antônio Carlos, 6627 – Belo Horizonte, MG</p>
+      <p><a href="https://lattes.cnpq.br/2408991231058279">Currículo Lattes</a> · <a href="https://dcc.ufmg.br/laboratorio-de-computacao-social/">LoCuS – Laboratório de Computação Social</a></p>
+    </div>
+    <div class="box">
+      <h3>Financiamento</h3>
+      <p>Conselho Nacional de Desenvolvimento Científico e Tecnológico (CNPq), Chamada CNPq/MCTI/FNDCT Nº 18/2021 – Universal, Faixa B, processo 402711/2021-1.</p>
+      <p>Também apoiaram atividades do projeto: CAPES, FAPEMIG e a Politecnico di Torino.</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">ProCoReS · Departamento de Ciência da Computação · UFMG · Dados de publicações atualizados em outubro de 2026.</div>
+</footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const PUBS = [{"key": "barbosa2026agressores", "title": "Agressores e Alvos: O mapa dos ataques identitários no Reddit brasileiro", "authors": ["B. R. G. Barbosa", "I. M. Ganem", "J. L. S. Moreira", "Ana Paula Couto da Silva"], "venue": "Anais do 32º Simpósio Brasileiro de Sistemas Multimídia e Web (WebMedia)", "year": 2026, "type": "Conferência", "link": "", "theme": "Comportamento antissocial", "bib": "@inproceedings{barbosa2026agressores,\n  title     = {Agressores e Alvos: O mapa dos ataques identit{\\'a}rios no {R}eddit brasileiro},\n  author    = {Barbosa, B. R. G. and Ganem, I. M. and Moreira, J. L. S. and da Silva, Ana Paula Couto},\n  booktitle = {Anais do 32º Simp{\\'o}sio Brasileiro de Sistemas Multim{\\'i}dia e Web (WebMedia)},\n  year      = {2026},\n  publisher = {SBC}\n}"}, {"key": "resende2026semaglutida", "title": "Caracterização da dinâmica informacional sobre semaglutida no YouTube: análise de conteúdo, engajamento e sinais sociais", "authors": ["Samira Resende", "Michele A. Brandão", "Leonardo R. Oliveira", "Helen C. Lima"], "venue": "Anais Estendidos do Simpósio Brasileiro de Computação Aplicada à Saúde (SBCAS)", "year": 2026, "type": "Conferência", "link": "", "theme": "Saúde e desinformação", "bib": "@inproceedings{resende2026semaglutida,\n  author    = {Resende, Samira and Brand{\\~a}o, Michele A. and Oliveira, Leonardo R. and Lima, Helen C.},\n  title     = {Caracteriza{\\c{c}}{\\~a}o da din{\\^a}mica informacional sobre semaglutida no {Y}ou{T}ube: an{\\'a}lise de conte{\\'u}do, engajamento e sinais sociais},\n  booktitle = {Anais Estendidos do Simp{\\'o}sio Brasileiro de Computa{\\c{c}}{\\~a}o Aplicada {\\`a} Sa{\\'u}de (SBCAS)},\n  publisher = {SBC},\n  year      = {2026}\n}"}, {"key": "machado2026usuarios", "title": "Caracterização e Comportamento de Usuários Tóxicos em Subreddits Brasileiros", "authors": ["Marco Antônio de Alcântara Machado", "Giovana Piorino", "Luiz Henrique Quevedo Lima", "Ana Paula Couto da Silva"], "venue": "Anais do XV Brazilian Workshop on Social Network Analysis and Mining (BraSNAM)", "year": 2026, "type": "Conferência", "link": "https://doi.org/10.5753/brasnam.2026.22746", "theme": "Comportamento antissocial", "bib": "@inproceedings{machado2026usuarios,\n  title     = {Caracteriza{\\c{c}}{\\~a}o e Comportamento de Usu{\\'a}rios T{\\'o}xicos em Subreddits Brasileiros},\n  author    = {Machado, Marco Ant{\\^o}nio de Alc{\\^a}ntara and Piorino, Giovana and Lima, Luiz Henrique Quevedo and da Silva, Ana Paula Couto},\n  booktitle = {Anais do XV Brazilian Workshop on Social Network Analysis and Mining (BraSNAM)},\n  pages     = {28--41},\n  year      = {2026},\n  address   = {Gramado, RS, Brasil},\n  publisher = {SBC},\n  doi       = {10.5753/brasnam.2026.22746}\n}"}, {"key": "mendes2026personagens", "title": "Conectando Personagens, Revelando Gêneros: Uma Análise Computacional da Literatura em Português", "authors": ["B. M. A. Mendes", "Gabriella L. Araujo", "Marcele Araponga", "Mariana O. Silva", "Michele A. Brandão", "Mirella M. Moro"], "venue": "Anais do XV Brazilian Workshop on Social Network Analysis and Mining (BraSNAM)", "year": 2026, "type": "Conferência", "link": "https://doi.org/10.5753/brasnam.2026.23811", "theme": "Outros domínios", "bib": "@inproceedings{mendes2026personagens,\n  author    = {Mendes, B. M. A. and Araujo, Gabriella L. and Araponga, Marcele and Silva, Mariana O. and Brand{\\~a}o, Michele A. and Moro, Mirella M.},\n  title     = {Conectando Personagens, Revelando G{\\^e}neros: Uma An{\\'a}lise Computacional da Literatura em Portugu{\\^e}s},\n  booktitle = {Anais do XV Brazilian Workshop on Social Network Analysis and Mining (BraSNAM)},\n  pages     = {42--55},\n  publisher = {SBC},\n  address   = {Gramado, RS, Brasil},\n  year      = {2026},\n  doi       = {10.5753/brasnam.2026.23811}\n}"}, {"key": "oliveira2025contagious", "title": "Contagious Rhythms: A Wave-Based Epidemic Approach for Music Virality on Social Platforms", "authors": ["Gabriel P. Oliveira", "Luca Vassio", "Ana Paula Couto da Silva", "Mirella M. Moro"], "venue": "Social Networks Analysis and Mining. 17th International Conference, ASONAM 2025, Proceedings, Part I", "year": 2026, "type": "Conferência", "link": "https://doi.org/10.1007/978-3-032-13513-1_16", "theme": "Música e viralidade", "bib": "@inproceedings{oliveira2025contagious,\n  title     = {Contagious Rhythms: A Wave-Based Epidemic Approach for Music Virality on Social Platforms},\n  author    = {Oliveira, Gabriel P. and Vassio, Luca and da Silva, Ana Paula Couto and Moro, Mirella M.},\n  booktitle = {Social Networks Analysis and Mining. 17th International Conference, ASONAM 2025, Proceedings, Part I},\n  series    = {Lecture Notes in Computer Science},\n  volume    = {16322},\n  pages     = {182--196},\n  year      = {2026},\n  publisher = {Springer},\n  doi       = {10.1007/978-3-032-13513-1_16}\n}"}, {"key": "piorino2026dialogos", "title": "Diálogos Tóxicos: Gatilhos e Padrões de Interação no Reddit Brasileiro", "authors": ["Giovana Piorino", "Marco Antônio de Alcântara Machado", "Luiz Henrique Quevedo Lima", "Adriana Pagano", "Ana Paula Couto da Silva"], "venue": "Proceedings of the 17th International Conference on Computational Processing of Portuguese (PROPOR 2026) - Vol. 1", "year": 2026, "type": "Conferência", "link": "https://aclanthology.org/2026.propor-1.57/", "theme": "Comportamento antissocial", "bib": "@inproceedings{piorino2026dialogos,\n  title     = {Di{\\'a}logos T{\\'o}xicos: Gatilhos e Padr{\\~o}es de Intera{\\c{c}}{\\~a}o no {R}eddit Brasileiro},\n  author    = {Piorino, Giovana and Machado, Marco Ant{\\^o}nio de Alc{\\^a}ntara and Lima, Luiz Henrique Quevedo and Pagano, Adriana and da Silva, Ana Paula Couto},\n  booktitle = {Proceedings of the 17th International Conference on Computational Processing of Portuguese (PROPOR 2026) - Vol. 1},\n  pages     = {581--590},\n  year      = {2026},\n  month     = apr,\n  address   = {Salvador, Brazil},\n  publisher = {Association for Computational Linguistics},\n  url       = {https://aclanthology.org/2026.propor-1.57/}\n}"}, {"key": "oliveira2026epidemic", "title": "Epidemic wave dynamics of music virality on online social platforms", "authors": ["Gabriel P. Oliveira", "Luca Vassio", "Ana Paula Couto da Silva", "Mirella M. Moro"], "venue": "Social Network Analysis and Mining", "year": 2026, "type": "Periódico", "link": "https://doi.org/10.1007/s13278-026-01607-2", "theme": "Música e viralidade", "bib": "@article{oliveira2026epidemic,\n  title     = {Epidemic wave dynamics of music virality on online social platforms},\n  author    = {Oliveira, Gabriel P. and Vassio, Luca and da Silva, Ana Paula Couto and Moro, Mirella M.},\n  journal   = {Social Network Analysis and Mining},\n  volume    = {16},\n  pages     = {72},\n  year      = {2026},\n  doi       = {10.1007/s13278-026-01607-2}\n}"}, {"key": "piorino2026dangerous", "title": "Identifying and Characterizing Dangerous Road Sections Using Vehicle Telemetry and OpenStreetMap Data", "authors": ["G. Piorino", "A. Lanzillotta", "L. Vassio", "D. Giordano", "A. P. C. Silva", "Marco Mellia", "C. Tommasi", "M. Cristina"], "venue": "NetMob 2026", "year": 2026, "type": "Conferência", "link": "", "theme": "Outros domínios", "bib": "@inproceedings{piorino2026dangerous,\n  title     = {Identifying and Characterizing Dangerous Road Sections Using Vehicle Telemetry and OpenStreetMap Data},\n  author    = {Piorino, G. and Lanzillotta, A. and Vassio, L. and Giordano, D. and Silva, A. P. C. and Mellia, Marco and Tommasi, C. and Cristina, M.},\n  booktitle = {NetMob 2026},\n  year      = {2026},\n  volume    = {1}\n}"}, {"key": "soriano2026mapping", "title": "Mapping the Political Discourse in the Brazilian Chamber of Deputies: A Multi-Faceted Computational Approach", "authors": ["Flávio Soriano", "Victoria F. Mello", "Pedro B. Rigueira", "Gisele L. Pappa", "Wagner Meira Jr.", "Ana Paula Couto da Silva", "Jussara M. Almeida"], "venue": "Proceedings of the Twentieth International AAAI Conference on Web and Social Media (ICWSM)", "year": 2026, "type": "Conferência", "link": "https://doi.org/10.1609/icwsm.v20i1.42745", "theme": "Política e difusão de informação", "bib": "@inproceedings{soriano2026mapping,\n  title     = {Mapping the Political Discourse in the {B}razilian {C}hamber of {D}eputies: A Multi-Faceted Computational Approach},\n  author    = {Soriano, Fl{\\'a}vio and Mello, Victoria F. and Rigueira, Pedro B. and Pappa, Gisele L. and Meira Jr., Wagner and da Silva, Ana Paula Couto and Almeida, Jussara M.},\n  booktitle = {Proceedings of the Twentieth International AAAI Conference on Web and Social Media (ICWSM)},\n  volume    = {20},\n  year      = {2026},\n  doi       = {10.1609/icwsm.v20i1.42745},\n  eprint    = {2604.21897},\n  archivePrefix = {arXiv}\n}"}, {"key": "souza2026newsfraud", "title": "NewsFraud-SC: A Dataset of News about Corruption Extracted from SC Multiple Portals", "authors": ["Ana Clara Stupp de Souza", "Carina F. Dorneles"], "venue": "Anais do VIII Dataset Showcase Workshop (DSW)", "year": 2026, "type": "Conferência", "link": "https://doi.org/10.5753/dsw.2026.249443", "theme": "Outros domínios", "bib": "@inproceedings{souza2026newsfraud,\n  author    = {Souza, Ana Clara Stupp de and Dorneles, Carina F.},\n  title     = {{NewsFraud-SC}: A Dataset of News about Corruption Extracted from {SC} Multiple Portals},\n  booktitle = {Anais do VIII Dataset Showcase Workshop (DSW)},\n  pages     = {13--23},\n  publisher = {SBC},\n  address   = {S{\\~a}o Carlos, SP, Brasil},\n  year      = {2026},\n  doi       = {10.5753/dsw.2026.249443}\n}"}, {"key": "azevedo2026vaccination", "title": "The Brazilian Vaccination Debate on YouTube: Topics, Perspectives, and Engagement Dynamics", "authors": ["M. S. Azevedo", "G. Oliveira", "A. Failla", "A. M. Sousa", "F. Murai", "Ana Paula Couto da Silva", "C. H. Ferreira"], "venue": "The 18th International Conference on Advances in Social Networks Analysis and Mining (ASONAM)", "year": 2026, "type": "Conferência", "link": "", "theme": "Saúde e desinformação", "bib": "@inproceedings{azevedo2026vaccination,\n  title     = {The {B}razilian Vaccination Debate on {Y}ou{T}ube: Topics, Perspectives, and Engagement Dynamics},\n  author    = {Azevedo, M. S. and Oliveira, G. and Failla, A. and Sousa, A. M. and Murai, F. and da Silva, Ana Paula Couto and Ferreira, C. H.},\n  booktitle = {The 18th International Conference on Advances in Social Networks Analysis and Mining (ASONAM)},\n  volume    = {1},\n  year      = {2026}\n}"}, {"key": "oliveira2026vaccine", "title": "Who Shapes Brazil's Vaccine Debate? Semi-Supervised Modeling of Stance and Polarization in YouTube's Media Ecosystem", "authors": ["Geovana S. de Oliveira", "Ana Paula Couto da Silva", "Fabricio Murai", "Carlos H. G. Ferreira"], "venue": "Proceedings of the 18th ACM Web Science Conference (WebSci '26)", "year": 2026, "type": "Conferência", "link": "", "theme": "Saúde e desinformação", "bib": "@inproceedings{oliveira2026vaccine,\n  title     = {Who Shapes {B}razil's Vaccine Debate? Semi-Supervised Modeling of Stance and Polarization in {Y}ou{T}ube's Media Ecosystem},\n  author    = {Oliveira, Geovana S. de and da Silva, Ana Paula Couto and Murai, Fabricio and Ferreira, Carlos H. G.},\n  booktitle = {Proceedings of the 18th ACM Web Science Conference (WebSci '26)},\n  pages     = {23--34},\n  year      = {2026},\n  publisher = {ACM},\n  eprint    = {2604.18586},\n  archivePrefix = {arXiv}\n}"}, {"key": "oliveira2025network", "title": "A Network-Driven Framework for Bidimensional Analysis of Information Dissemination on Social Media Platforms", "authors": ["Geovana S. Oliveira", "João Pedro Lobo", "Otávio Venâncio", "Vinícius da F. Vieira", "Jussara M. Almeida", "Ana Paula Couto da Silva", "Ronan S. Ferreira", "Carlos H. G. Ferreira"], "venue": "Journal on Interactive Systems", "year": 2025, "type": "Periódico", "link": "https://doi.org/10.5753/jis.2025.5526", "theme": "Métodos de redes", "bib": "@article{oliveira2025network,\n  title     = {A Network-Driven Framework for Bidimensional Analysis of Information Dissemination on Social Media Platforms},\n  author    = {Oliveira, Geovana S. and Lobo, Jo{\\~a}o Pedro and Ven{\\^a}ncio, Ot{\\'a}vio and Vieira, Vin{\\'i}cius da F. and Almeida, Jussara M. and da Silva, Ana Paula Couto and Ferreira, Ronan S. and Ferreira, Carlos H. G.},\n  journal   = {Journal on Interactive Systems},\n  volume    = {16},\n  number    = {1},\n  year      = {2025},\n  doi       = {10.5753/jis.2025.5526}\n}"}, {"key": "venancio2025hostility", "title": "Analysis and Detection of Political Hostility on Telegram during the 2022 Brazilian Election Period", "authors": ["O. R. Venâncio", "P. A. Paula", "J. C. S. Reis", "A. Pagano", "C. H. Ferreira", "Ana Paula Couto da Silva"], "venue": "IEEE/WIC International Conference on Web Intelligence and Intelligent Agent Technology (WI-IAT)", "year": 2025, "type": "Conferência", "link": "", "theme": "Política e difusão de informação", "bib": "@inproceedings{venancio2025hostility,\n  title     = {Analysis and Detection of Political Hostility on {T}elegram during the 2022 {B}razilian Election Period},\n  author    = {Ven{\\^a}ncio, O. R. and Paula, P. A. and Reis, J. C. S. and Pagano, A. and Ferreira, C. H. and da Silva, Ana Paula Couto},\n  booktitle = {IEEE/WIC International Conference on Web Intelligence and Intelligent Agent Technology (WI-IAT)},\n  year      = {2025},\n  address   = {London, UK}\n}"}, {"key": "tobias2025analise", "title": "Análise Linguística de Comentários de Humanos e de Modelos de Linguagem a Postagens em Comunidades Brasileiras do Reddit", "authors": ["Fernanda Luiza Tobias", "Ana Paula Couto da Silva"], "venue": "Proceedings of the 31st Brazilian Symposium on Multimedia and the Web (WebMedia)", "year": 2025, "type": "Conferência", "link": "https://sol.sbc.org.br/index.php/webmedia/article/view/38001", "theme": "Comportamento antissocial", "bib": "@inproceedings{tobias2025analise,\n  title     = {An{\\'a}lise Lingu{\\'i}stica de Coment{\\'a}rios de Humanos e de Modelos de Linguagem a Postagens em Comunidades Brasileiras do {R}eddit},\n  author    = {Tobias, Fernanda Luiza and da Silva, Ana Paula Couto},\n  booktitle = {Proceedings of the 31st Brazilian Symposium on Multimedia and the Web (WebMedia)},\n  pages     = {521--525},\n  year      = {2025},\n  address   = {Rio de Janeiro, Brasil},\n  publisher = {SBC},\n  url       = {https://sol.sbc.org.br/index.php/webmedia/article/view/38001}\n}"}, {"key": "cunha2025stance", "title": "Caracterizando Polarização nas Eleições Brasileiras de 2018 e 2022: Uma Análise das Discussões no Reddit com um Modelo de Regressão para Stance Detection", "authors": ["Gustavo F. Cunha", "Ana Paula Couto da Silva"], "venue": "Revista Eletrônica de Iniciação Científica em Computação", "year": 2025, "type": "Periódico", "link": "https://doi.org/10.5753/reic.2025.6597", "theme": "Política e difusão de informação", "bib": "@article{cunha2025stance,\n  author  = {Cunha, Gustavo F. and da Silva, Ana Paula Couto},\n  title   = {Caracterizando Polariza{\\c{c}}{\\~a}o nas Elei{\\c{c}}{\\~o}es Brasileiras de 2018 e 2022: Uma An{\\'a}lise das Discuss{\\~o}es no {R}eddit com um Modelo de Regress{\\~a}o para {S}tance {D}etection},\n  journal = {Revista Eletr{\\^o}nica de Inicia{\\c{c}}{\\~a}o Cient{\\'i}fica em Computa{\\c{c}}{\\~a}o},\n  volume  = {23},\n  number  = {1},\n  pages   = {265--275},\n  year    = {2025},\n  doi     = {10.5753/reic.2025.6597}\n}"}, {"key": "mateus2025reprodutibilidade", "title": "Explorando os Limites da Reprodutibilidade na Tarefa de Detecção de Comunidades em Modelos de Redes", "authors": ["Rainara Araújo Mateus", "Carlos H. G. Ferreira", "Ana Paula Couto da Silva"], "venue": "Proceedings of the 21st Brazilian Symposium on Information Systems (SBSI)", "year": 2025, "type": "Conferência", "link": "https://doi.org/10.5753/sbsi.2025.246558", "theme": "Métodos de redes", "bib": "@inproceedings{mateus2025reprodutibilidade,\n  title     = {Explorando os Limites da Reprodutibilidade na Tarefa de Detec{\\c{c}}{\\~a}o de Comunidades em Modelos de Redes},\n  author    = {Mateus, Rainara Ara{\\'u}jo and Ferreira, Carlos H. G. and da Silva, Ana Paula Couto},\n  booktitle = {Proceedings of the 21st Brazilian Symposium on Information Systems (SBSI)},\n  pages     = {515--524},\n  year      = {2025},\n  address   = {Recife, PE, Brasil},\n  publisher = {SBC},\n  doi       = {10.5753/sbsi.2025.246558}\n}"}, {"key": "fonseca2025influencia", "title": "Influência Externa na Popularidade Musical: Google Trends como Indicador de Viralidade e Sucesso no Spotify", "authors": ["Gabriela A. Fonseca", "Gabriel P. Oliveira", "Ana Paula Couto da Silva"], "venue": "Anais do XIV Brazilian Workshop on Social Network Analysis and Mining (BraSNAM)", "year": 2025, "type": "Conferência", "link": "https://doi.org/10.5753/brasnam.2025.8784", "theme": "Música e viralidade", "bib": "@inproceedings{fonseca2025influencia,\n  title     = {Influ{\\^e}ncia Externa na Popularidade Musical: {G}oogle {T}rends como Indicador de Viralidade e Sucesso no {S}potify},\n  author    = {Fonseca, Gabriela A. and Oliveira, Gabriel P. and da Silva, Ana Paula Couto},\n  booktitle = {Anais do XIV Brazilian Workshop on Social Network Analysis and Mining (BraSNAM)},\n  pages     = {93--105},\n  year      = {2025},\n  address   = {Macei{\\'o}, AL, Brasil},\n  publisher = {SBC},\n  doi       = {10.5753/brasnam.2025.8784}\n}"}, {"key": "oliveira2025modeling", "title": "Modeling music popularity as an epidemic: insights from the Brazilian market", "authors": ["Gabriel P. Oliveira", "Luca Vassio", "Ana Paula Couto da Silva", "Mirella M. Moro"], "venue": "Anais do XIV Brazilian Workshop on Social Network Analysis and Mining (BraSNAM)", "year": 2025, "type": "Conferência", "link": "https://doi.org/10.5753/brasnam.2025.8760", "theme": "Música e viralidade", "bib": "@inproceedings{oliveira2025modeling,\n  title     = {Modeling music popularity as an epidemic: insights from the {B}razilian market},\n  author    = {Oliveira, Gabriel P. and Vassio, Luca and da Silva, Ana Paula Couto and Moro, Mirella M.},\n  booktitle = {Anais do XIV Brazilian Workshop on Social Network Analysis and Mining (BraSNAM)},\n  pages     = {79--92},\n  year      = {2025},\n  address   = {Macei{\\'o}, AL, Brasil},\n  publisher = {SBC},\n  doi       = {10.5753/brasnam.2025.8760}\n}"}, {"key": "oliveira2025review", "title": "Music virality on social platforms: A literature review", "authors": ["Gabriel P. Oliveira", "Ana Paula Couto da Silva", "Mirella M. Moro"], "venue": "Revista Vórtex", "year": 2025, "type": "Periódico", "link": "https://doi.org/10.33871/vortex.2025.13.10848", "theme": "Música e viralidade", "bib": "@article{oliveira2025review,\n  author  = {Oliveira, Gabriel P. and da Silva, Ana Paula Couto and Moro, Mirella M.},\n  title   = {Music virality on social platforms: A literature review},\n  journal = {Revista V{\\'o}rtex},\n  volume  = {13},\n  pages   = {e10848},\n  year    = {2025},\n  doi     = {10.33871/vortex.2025.13.10848}\n}"}, {"key": "oliveira2025causal", "title": "On the Causal Relationship Between Music Virality and Success", "authors": ["Gabriel P. Oliveira", "Ana Paula Couto da Silva", "Mirella M. Moro"], "venue": "IEEE Access", "year": 2025, "type": "Periódico", "link": "", "theme": "Música e viralidade", "bib": "@article{oliveira2025causal,\n  title     = {On the Causal Relationship Between Music Virality and Success},\n  author    = {Oliveira, Gabriel P. and da Silva, Ana Paula Couto and Moro, Mirella M.},\n  journal   = {IEEE Access},\n  volume    = {13},\n  pages     = {122782--122791},\n  year      = {2025}\n}"}, {"key": "silva2025rewriting", "title": "Rewriting Stories with LLMs: Gender Bias in Generated Portuguese-language Narratives", "authors": ["Mariana O. Silva", "Michele A. Brandão", "Mirella M. Moro"], "venue": "Journal of the Brazilian Computer Society", "year": 2025, "type": "Periódico", "link": "https://doi.org/10.5753/jbcs.2025.5799", "theme": "Outros domínios", "bib": "@article{silva2025rewriting,\n  author  = {Silva, Mariana O. and Brand{\\~a}o, Michele A. and Moro, Mirella M.},\n  title   = {Rewriting Stories with {LLM}s: Gender Bias in Generated {P}ortuguese-language Narratives},\n  journal = {Journal of the Brazilian Computer Society},\n  volume  = {31},\n  number  = {1},\n  pages   = {1119--1135},\n  year    = {2025},\n  doi     = {10.5753/jbcs.2025.5799}\n}"}, {"key": "piorino2025sentiment", "title": "Sentiment Analysis of Shared Content in Brazilian Reddit Communities", "authors": ["Giovana Piorino", "Vitor Moreira", "Luiz Henrique Quevedo Lima", "Ana Clara Souza Pagano", "Adriana Silvina Pagano", "Ana Paula Couto da Silva"], "venue": "Journal on Interactive Systems", "year": 2025, "type": "Periódico", "link": "https://doi.org/10.5753/jis.2025.5564", "theme": "Comportamento antissocial", "bib": "@article{piorino2025sentiment,\n  title     = {Sentiment Analysis of Shared Content in {B}razilian {R}eddit Communities},\n  author    = {Piorino, Giovana and Moreira, Vitor and Lima, Luiz Henrique Quevedo and Pagano, Ana Clara Souza and Pagano, Adriana Silvina and da Silva, Ana Paula Couto},\n  journal   = {Journal on Interactive Systems},\n  volume    = {16},\n  number    = {1},\n  year      = {2025},\n  doi       = {10.5753/jis.2025.5564}\n}"}, {"key": "piorino2025toxicidade", "title": "Toxicidade e Gatilhos: Um Estudo de Caso em Comunidades do Reddit no Brasil", "authors": ["Giovana Piorino", "Luiz Henrique Quevedo Lima", "Adriana Silvina Pagano", "Ana Paula Couto da Silva"], "venue": "Proceedings of the 31st Brazilian Symposium on Multimedia and the Web (WebMedia)", "year": 2025, "type": "Conferência", "link": "https://doi.org/10.5753/webmedia.2025.15984", "theme": "Comportamento antissocial", "bib": "@inproceedings{piorino2025toxicidade,\n  title     = {Toxicidade e Gatilhos: Um Estudo de Caso em Comunidades do {R}eddit no {B}rasil},\n  author    = {Piorino, Giovana and Lima, Luiz Henrique Quevedo and Pagano, Adriana Silvina and da Silva, Ana Paula Couto},\n  booktitle = {Proceedings of the 31st Brazilian Symposium on Multimedia and the Web (WebMedia)},\n  pages     = {575--579},\n  year      = {2025},\n  address   = {Rio de Janeiro, Brasil},\n  publisher = {SBC},\n  doi       = {10.5753/webmedia.2025.15984}\n}"}, {"key": "oliveira2024quantitative", "title": "A quantitative comparison of viral and hit songs in the Brazilian music market", "authors": ["Gabriel P. Oliveira", "Ana Paula Couto da Silva", "Mirella M. Moro"], "venue": "Revista Vórtex", "year": 2024, "type": "Periódico", "link": "https://doi.org/10.33871/vortex.2024.12.8727", "theme": "Música e viralidade", "bib": "@article{oliveira2024quantitative,\n  author  = {Oliveira, Gabriel P. and da Silva, Ana Paula Couto and Moro, Mirella M.},\n  title   = {A quantitative comparison of viral and hit songs in the {B}razilian music market},\n  journal = {Revista V{\\'o}rtex},\n  volume  = {12},\n  pages   = {1--29},\n  year    = {2024},\n  doi     = {10.33871/vortex.2024.12.8727}\n}"}, {"key": "oliveira2024temporal", "title": "Analyzing the temporal relation between virality and success in the Brazilian music market", "authors": ["Gabriel P. Oliveira", "Ana Paula Couto da Silva", "Mirella M. Moro"], "venue": "Anais do Seminário Integrado de Software e Hardware (SEMISH)", "year": 2024, "type": "Conferência", "link": "", "theme": "Música e viralidade", "bib": "@inproceedings{oliveira2024temporal,\n  author    = {Oliveira, Gabriel P. and da Silva, Ana Paula Couto and Moro, Mirella M.},\n  title     = {Analyzing the temporal relation between virality and success in the {B}razilian music market},\n  booktitle = {Anais do Semin{\\'a}rio Integrado de Software e Hardware (SEMISH)},\n  publisher = {SBC},\n  address   = {Porto Alegre, RS, Brasil},\n  year      = {2024}\n}"}, {"key": "pereira2024oscar", "title": "Análise Comparativa dos Artigos de Filmes Indicados ao Oscar em Três Versões da Wikipédia", "authors": ["Cecília Junqueira V. M. Pereira", "Marisa Affonso Vasconcelos", "Ana Paula Couto da Silva"], "venue": "Anais Estendidos do XXX Simpósio Brasileiro de Sistemas Multimídia e Web (WebMedia) – CTIC", "year": 2024, "type": "Conferência", "link": "https://sol.sbc.org.br/index.php/webmedia_estendido/article/view/30473", "theme": "Outros domínios", "bib": "@inproceedings{pereira2024oscar,\n  title     = {An{\\'a}lise Comparativa dos Artigos de Filmes Indicados ao {O}scar em Tr{\\^e}s Vers{\\~o}es da {W}ikip{\\'e}dia},\n  author    = {Pereira, Cec{\\'i}lia Junqueira V. M. and Vasconcelos, Marisa Affonso and da Silva, Ana Paula Couto},\n  booktitle = {Anais Estendidos do XXX Simp{\\'o}sio Brasileiro de Sistemas Multim{\\'i}dia e Web (WebMedia) -- CTIC},\n  year      = {2024},\n  address   = {Juiz de Fora, MG, Brasil},\n  publisher = {SBC},\n  url       = {https://sol.sbc.org.br/index.php/webmedia_estendido/article/view/30473}\n}"}, {"key": "piorino2024analise", "title": "Análise de sentimentos de conteúdo compartilhado em comunidades brasileiras do Reddit: Avaliação de um conjunto de dados rotulados por humanos", "authors": ["Giovana Piorino", "Vitor Moreira", "Luiz Henrique Quevedo Lima", "Adriana Silvina Pagano", "Ana Paula Couto da Silva"], "venue": "Anais do XXX Simpósio Brasileiro de Sistemas Multimídia e Web (WebMedia)", "year": 2024, "type": "Conferência", "link": "https://doi.org/10.5753/webmedia.2024.242020", "theme": "Comportamento antissocial", "bib": "@inproceedings{piorino2024analise,\n  author    = {Piorino, Giovana and Moreira, Vitor and Lima, Luiz Henrique Quevedo and Pagano, Adriana Silvina and da Silva, Ana Paula Couto},\n  title     = {An{\\'a}lise de sentimentos de conte{\\'u}do compartilhado em comunidades brasileiras do {R}eddit: Avalia{\\c{c}}{\\~a}o de um conjunto de dados rotulados por humanos},\n  booktitle = {Anais do XXX Simp{\\'o}sio Brasileiro de Sistemas Multim{\\'i}dia e Web (WebMedia)},\n  pages     = {54--62},\n  publisher = {SBC},\n  address   = {Juiz de Fora, MG, Brasil},\n  year      = {2024},\n  doi       = {10.5753/webmedia.2024.242020}\n}"}, {"key": "silva2024campanha", "title": "Campanha Eleitoral Legal: Detecção de Propaganda Eleitoral e Ações Coordenadas de Campanha", "authors": ["Márcio Silva", "Marcelo M. R. Araújo", "Carlos H. G. Ferreira", "Julio C. S. Reis", "Ana Paula Couto da Silva", "Jussara M. Almeida", "Fabrício Benevenuto"], "venue": "Anais Estendidos do XXX Simpósio Brasileiro de Sistemas Multimídia e Web (WebMedia) – Workshop de Ferramentas e Aplicações", "year": 2024, "type": "Conferência", "link": "https://doi.org/10.5753/webmedia_estendido.2024.243924", "theme": "Política e difusão de informação", "bib": "@inproceedings{silva2024campanha,\n  title     = {Campanha Eleitoral Legal: Detec{\\c{c}}{\\~a}o de Propaganda Eleitoral e A{\\c{c}}{\\~o}es Coordenadas de Campanha},\n  author    = {Silva, M{\\'a}rcio and Ara{\\'u}jo, Marcelo M. R. and Ferreira, Carlos H. G. and Reis, Julio C. S. and da Silva, Ana Paula Couto and Almeida, Jussara M. and Benevenuto, Fabr{\\'i}cio},\n  booktitle = {Anais Estendidos do XXX Simp{\\'o}sio Brasileiro de Sistemas Multim{\\'i}dia e Web (WebMedia) -- Workshop de Ferramentas e Aplica{\\c{c}}{\\~o}es},\n  pages     = {79--82},\n  year      = {2024},\n  address   = {Juiz de Fora, MG, Brasil},\n  publisher = {SBC},\n  doi       = {10.5753/webmedia_estendido.2024.243924}\n}"}, {"key": "cunha2024polarizacao", "title": "Caracterizando Polarização em Redes Sociais: Um Estudo de Caso das Discussões no Reddit sobre as Eleições Brasileiras de 2018 e 2022", "authors": ["Gustavo F. Cunha", "Ana Paula Couto da Silva"], "venue": "Proceedings of the 30th Brazilian Symposium on Multimedia and the Web (WebMedia)", "year": 2024, "type": "Conferência", "link": "https://doi.org/10.5753/webmedia.2024.241688", "theme": "Política e difusão de informação", "bib": "@inproceedings{cunha2024polarizacao,\n  title     = {Caracterizando Polariza{\\c{c}}{\\~a}o em Redes Sociais: Um Estudo de Caso das Discuss{\\~o}es no {R}eddit sobre as Elei{\\c{c}}{\\~o}es Brasileiras de 2018 e 2022},\n  author    = {Cunha, Gustavo F. and da Silva, Ana Paula Couto},\n  booktitle = {Proceedings of the 30th Brazilian Symposium on Multimedia and the Web (WebMedia)},\n  pages     = {365--369},\n  year      = {2024},\n  address   = {Juiz de Fora, MG, Brasil},\n  publisher = {SBC},\n  doi       = {10.5753/webmedia.2024.241688}\n}"}, {"key": "vilasboas2024autismo", "title": "Caracterização da discussão do autismo na comunidade brasileira do TikTok", "authors": ["Giovanna Martins Vilas Boas", "Samuel Assis Vieira", "Jean Brunialti Godard", "Cristiane dos Santos Dias", "Zilma Silveira Nogueira Reis", "Ana Paula Couto da Silva"], "venue": "Journal of Health Informatics", "year": 2024, "type": "Periódico", "link": "https://doi.org/10.59681/2175-4411.v16.iEspecial.2024.1359", "theme": "Saúde e desinformação", "bib": "@article{vilasboas2024autismo,\n  author  = {Vilas Boas, Giovanna Martins and Vieira, Samuel Assis and Godard, Jean Brunialti and Dias, Cristiane dos Santos and Reis, Zilma Silveira Nogueira and da Silva, Ana Paula Couto},\n  title   = {Caracteriza{\\c{c}}{\\~a}o da discuss{\\~a}o do autismo na comunidade brasileira do {T}ik{T}ok},\n  journal = {Journal of Health Informatics},\n  volume  = {16},\n  number  = {Especial},\n  year    = {2024},\n  note    = {Anais do Congresso Brasileiro de Inform{\\'a}tica em Sa{\\'u}de (CBIS 2024)},\n  doi     = {10.59681/2175-4411.v16.iEspecial.2024.1359}\n}"}, {"key": "venancio2024evidencias", "title": "Evidências de disseminação de conteúdo no Telegram durante o ataque aos órgãos públicos brasileiros em 2023", "authors": ["Otávio R. Venâncio", "Gabriel H. S. Gonçalves", "Carlos H. G. Ferreira", "Ana Paula Couto da Silva"], "venue": "Proceedings of the 30th Brazilian Symposium on Multimedia and the Web (WebMedia)", "year": 2024, "type": "Conferência", "link": "https://sol.sbc.org.br/index.php/webmedia/article/view/30337", "theme": "Política e difusão de informação", "bib": "@inproceedings{venancio2024evidencias,\n  title     = {Evid{\\^e}ncias de dissemina{\\c{c}}{\\~a}o de conte{\\'u}do no {T}elegram durante o ataque aos {\\'o}rg{\\~a}os p{\\'u}blicos brasileiros em 2023},\n  author    = {Ven{\\^a}ncio, Ot{\\'a}vio R. and Gon{\\c{c}}alves, Gabriel H. S. and Ferreira, Carlos H. G. and da Silva, Ana Paula Couto},\n  booktitle = {Proceedings of the 30th Brazilian Symposium on Multimedia and the Web (WebMedia)},\n  pages     = {385--389},\n  year      = {2024},\n  address   = {Juiz de Fora, MG, Brasil},\n  publisher = {SBC},\n  url       = {https://sol.sbc.org.br/index.php/webmedia/article/view/30337}\n}"}, {"key": "silva_humanas", "title": "Mídias Sociais On-line a Serviço das Humanas: Sugestões de Ferramentas Computacionais Úteis", "authors": ["Ana Paula Couto da Silva"], "venue": "A internet como campo de disputas de gênero (Cultura e Barbárie)", "year": 2024, "type": "Capítulo", "link": "", "theme": "Outros domínios", "bib": "@misc{silva_humanas,\n  author = {da Silva, Ana Paula Couto},\n  title  = {M{\\'i}dias Sociais On-line a Servi{\\c{c}}o das Humanas: Sugest{\\~o}es de Ferramentas Computacionais {\\'U}teis},\n  note   = {Ve{\\'i}culo e ano a confirmar}\n}"}, {"key": "lima2024rotulacao", "title": "Rotulação e Caracterização de Conteúdo Tóxico de Comunidades do Reddit no Brasil", "authors": ["Luiz Henrique Quevedo Lima", "Ana Clara Souza Pagano", "Adriana Silvina Pagano", "Ana Paula Couto da Silva"], "venue": "Linguamática", "year": 2024, "type": "Periódico", "link": "", "theme": "Comportamento antissocial", "bib": "@article{lima2024rotulacao,\n  author  = {Lima, Luiz Henrique Quevedo and Pagano, Ana Clara Souza and Pagano, Adriana Silvina and da Silva, Ana Paula Couto},\n  title   = {Rotula{\\c{c}}{\\~a}o e Caracteriza{\\c{c}}{\\~a}o de Conte{\\'u}do T{\\'o}xico de Comunidades do {R}eddit no {B}rasil},\n  journal = {Linguam{\\'a}tica},\n  year    = {2024}\n}"}, {"key": "lima2024toxic", "title": "Toxic Content Detection in online social networks: a new dataset from Brazilian Reddit Communities", "authors": ["Luiz Henrique Quevedo Lima", "Adriana Silvina Pagano", "Ana Paula Couto da Silva"], "venue": "Proceedings of the 16th International Conference on Computational Processing of Portuguese (PROPOR 2024) - Vol. 1", "year": 2024, "type": "Conferência", "link": "https://aclanthology.org/2024.propor-1.48/", "theme": "Comportamento antissocial", "bib": "@inproceedings{lima2024toxic,\n  title     = {Toxic Content Detection in online social networks: a new dataset from {B}razilian {R}eddit Communities},\n  author    = {Lima, Luiz Henrique Quevedo and Pagano, Adriana Silvina and da Silva, Ana Paula Couto},\n  booktitle = {Proceedings of the 16th International Conference on Computational Processing of Portuguese (PROPOR 2024) - Vol. 1},\n  pages     = {472--482},\n  year      = {2024},\n  month     = mar,\n  address   = {Santiago de Compostela, Galicia/Spain},\n  publisher = {Association for Computational Linguistics},\n  url       = {https://aclanthology.org/2024.propor-1.48/}\n}"}, {"key": "malagoli2024twitter", "title": "Twitter and the 2022 Brazilian Elections Portrait: A Network and Content-Driven Analysis", "authors": ["Larissa Malagoli", "Giovana Piorino", "Carlos H. G. Ferreira", "Ana Paula Couto da Silva"], "venue": "Proceedings of the 30th Brazilian Symposium on Multimedia and the Web (WebMedia)", "year": 2024, "type": "Conferência", "link": "https://doi.org/10.5753/webmedia.2024.241926", "theme": "Política e difusão de informação", "bib": "@inproceedings{malagoli2024twitter,\n  author    = {Malagoli, Larissa and Piorino, Giovana and Ferreira, Carlos H. G. and da Silva, Ana Paula Couto},\n  title     = {{T}witter and the 2022 {B}razilian Elections Portrait: A Network and Content-Driven Analysis},\n  booktitle = {Proceedings of the 30th Brazilian Symposium on Multimedia and the Web (WebMedia)},\n  pages     = {283--291},\n  publisher = {SBC},\n  address   = {Juiz de Fora, MG, Brasil},\n  year      = {2024},\n  doi       = {10.5753/webmedia.2024.241926}\n}"}, {"key": "oliveira2024framework", "title": "Um Framework para Análise Bidimensional de Disseminação de Informações em Plataformas de Mídias Sociais", "authors": ["Geovana S. Oliveira", "Otávio Venâncio", "Vinícius Vieira", "Jussara Almeida", "Ana Paula Couto da Silva", "Ronan Ferreira", "Carlos H. G. Ferreira"], "venue": "Anais do XXX Simpósio Brasileiro de Sistemas Multimídia e Web (WebMedia)", "year": 2024, "type": "Conferência", "link": "https://doi.org/10.5753/webmedia.2024.241957", "theme": "Métodos de redes", "bib": "@inproceedings{oliveira2024framework,\n  author    = {Oliveira, Geovana S. and Ven{\\^a}ncio, Ot{\\'a}vio and Vieira, Vin{\\'i}cius and Almeida, Jussara and da Silva, Ana Paula Couto and Ferreira, Ronan and Ferreira, Carlos H. G.},\n  title     = {Um Framework para An{\\'a}lise Bidimensional de Dissemina{\\c{c}}{\\~a}o de Informa{\\c{c}}{\\~o}es em Plataformas de M{\\'i}dias Sociais},\n  booktitle = {Anais do XXX Simp{\\'o}sio Brasileiro de Sistemas Multim{\\'i}dia e Web (WebMedia)},\n  pages     = {301--309},\n  publisher = {SBC},\n  address   = {Juiz de Fora, MG, Brasil},\n  year      = {2024},\n  doi       = {10.5753/webmedia.2024.241957}\n}"}, {"key": "venancio2024unraveling", "title": "Unraveling User Coordination on Telegram: A Comprehensive Analysis of Political Mobilization during the 2022 Brazilian Presidential Election", "authors": ["Otávio R. Venâncio", "Carlos H. G. Ferreira", "Jussara M. Almeida", "Ana Paula Couto da Silva"], "venue": "Proceedings of the International AAAI Conference on Web and Social Media (ICWSM)", "year": 2024, "type": "Conferência", "link": "https://doi.org/10.1609/icwsm.v18i1.31408", "theme": "Política e difusão de informação", "bib": "@inproceedings{venancio2024unraveling,\n  author    = {Ven{\\^a}ncio, Ot{\\'a}vio R. and Ferreira, Carlos H. G. and Almeida, Jussara M. and da Silva, Ana Paula Couto},\n  title     = {Unraveling User Coordination on {T}elegram: A Comprehensive Analysis of Political Mobilization during the 2022 {B}razilian Presidential Election},\n  booktitle = {Proceedings of the International AAAI Conference on Web and Social Media (ICWSM)},\n  volume    = {18},\n  number    = {1},\n  pages     = {1545--1556},\n  year      = {2024},\n  doi       = {10.1609/icwsm.v18i1.31408}\n}"}, {"key": "oliveira2024viralsong", "title": "What makes a viral song? Unraveling music virality factors", "authors": ["Gabriel P. Oliveira", "Ana Paula Couto da Silva", "Mirella M. Moro"], "venue": "Proceedings of the 16th ACM Web Science Conference (WebSci '24)", "year": 2024, "type": "Conferência", "link": "https://doi.org/10.1145/3614419.3644011", "theme": "Música e viralidade", "bib": "@inproceedings{oliveira2024viralsong,\n  author    = {Oliveira, Gabriel P. and da Silva, Ana Paula Couto and Moro, Mirella M.},\n  title     = {What makes a viral song? Unraveling music virality factors},\n  booktitle = {Proceedings of the 16th ACM Web Science Conference (WebSci '24)},\n  publisher = {ACM},\n  year      = {2024},\n  doi       = {10.1145/3614419.3644011}\n}"}, {"key": "araujo2023campanhas", "title": "Identificação e Caracterização de Campanhas de Propagandas Eleitorais Antecipadas Brasileiras no Twitter", "authors": ["Marcelo M. R. Araujo", "Carlos H. G. Ferreira", "Julio C. S. Reis", "Ana Paula Couto da Silva", "Jussara M. Almeida"], "venue": "Anais do XII Brazilian Workshop on Social Network Analysis and Mining (BraSNAM)", "year": 2023, "type": "Conferência", "link": "https://doi.org/10.5753/brasnam.2023.229879", "theme": "Política e difusão de informação", "bib": "@inproceedings{araujo2023campanhas,\n  title     = {Identifica{\\c{c}}{\\~a}o e Caracteriza{\\c{c}}{\\~a}o de Campanhas de Propagandas Eleitorais Antecipadas Brasileiras no {T}witter},\n  author    = {Araujo, Marcelo M. R. and Ferreira, Carlos H. G. and Reis, Julio C. S. and da Silva, Ana Paula Couto and Almeida, Jussara M.},\n  booktitle = {Anais do XII Brazilian Workshop on Social Network Analysis and Mining (BraSNAM)},\n  pages     = {67--78},\n  year      = {2023},\n  address   = {Jo{\\~a}o Pessoa, PB, Brasil},\n  publisher = {SBC},\n  doi       = {10.5753/brasnam.2023.229879}\n}"}, {"key": "paiva2023feminismo", "title": "O debate do feminismo no Twitter: Um estudo de caso das eleições brasileiras de 2022", "authors": ["Beatriz F. Paiva", "Beatriz R. G. Barbosa", "Ana Paula Couto da Silva", "Mirella M. Moro"], "venue": "Anais do XII Brazilian Workshop on Social Network Analysis and Mining (BraSNAM)", "year": 2023, "type": "Conferência", "link": "https://doi.org/10.5753/brasnam.2023.230537", "theme": "Política e difusão de informação", "bib": "@inproceedings{paiva2023feminismo,\n  title     = {O debate do feminismo no {T}witter: Um estudo de caso das elei{\\c{c}}{\\~o}es brasileiras de 2022},\n  author    = {Paiva, Beatriz F. and Barbosa, Beatriz R. G. and da Silva, Ana Paula Couto and Moro, Mirella M.},\n  booktitle = {Anais do XII Brazilian Workshop on Social Network Analysis and Mining (BraSNAM)},\n  year      = {2023},\n  address   = {Jo{\\~a}o Pessoa, PB, Brasil},\n  publisher = {SBC},\n  doi       = {10.5753/brasnam.2023.230537}\n}"}, {"key": "vilasboas_iasaude", "title": "@iasaudeufmg: Usando o Instagram para Divulgar a Aplicação da Inteligência Artificial na Saúde", "authors": ["Giovanna M. Vilas Boas", "T. V. C. Rocha", "G. A. S. Maia", "T. Madeira", "S. Caldeira", "Cristiane Dias", "Ana Paula Couto da Silva", "Zilma Reis"], "venue": "Congresso Brasileiro de Informática em Saúde (CBIS)", "year": 2022, "type": "Resumo", "link": "", "theme": "Saúde e desinformação", "bib": "@misc{vilasboas_iasaude,\n  author = {Vilas Boas, Giovanna M. and Rocha, T. V. C. and Maia, G. A. S. and Madeira, T. and Caldeira, S. and Dias, Cristiane and da Silva, Ana Paula Couto and Reis, Zilma},\n  title  = {@iasaudeufmg: Usando o {I}nstagram para Divulgar a Aplica{\\c{c}}{\\~a}o da Intelig{\\^e}ncia Artificial na Sa{\\'u}de},\n  note   = {Ve{\\'i}culo a confirmar}\n}"}, {"key": "alzamora2022covid", "title": "A COVID-19 no Twitter: correlacionando vocabulário com agravamento e atenuação da pandemia no Brasil", "authors": ["Pedro L. Alzamora", "Marcelo S. Locatelli", "Marcelo Ganem", "Thiago H. M. Santos", "D. V. Ferreira", "Tereza Bernardes", "Ramon A. S. Franco", "Janaina Guiginski", "Evandro L. T. P. Cunha", "Ana Paula Couto da Silva", "Wagner Meira Jr."], "venue": "Anais do XI Brazilian Workshop on Social Network Analysis and Mining (BraSNAM)", "year": 2022, "type": "Conferência", "link": "https://doi.org/10.5753/brasnam.2022.223330", "theme": "Saúde e desinformação", "bib": "@inproceedings{alzamora2022covid,\n  author    = {Alzamora, Pedro L. and Locatelli, Marcelo S. and Ganem, Marcelo and Santos, Thiago H. M. and Ferreira, D. V. and Bernardes, Tereza and Franco, Ramon A. S. and Guiginski, Janaina and Cunha, Evandro L. T. P. and da Silva, Ana Paula Couto and Meira Jr., Wagner},\n  title     = {A {COVID}-19 no {T}witter: correlacionando vocabul{\\'a}rio com agravamento e atenua{\\c{c}}{\\~a}o da pandemia no {B}rasil},\n  booktitle = {Anais do XI Brazilian Workshop on Social Network Analysis and Mining (BraSNAM)},\n  pages     = {157--168},\n  publisher = {SBC},\n  address   = {Niter{\\'o}i, RJ, Brasil},\n  year      = {2022},\n  doi       = {10.5753/brasnam.2022.223330}\n}"}, {"key": "araujo2022factcenter", "title": "A Comprehensive Dataset of Brazilian Fact-Checking Stories", "authors": ["Igor Marques de Araújo", "Isadora Salles", "João M. M. Couto", "Breno C. Pimenta", "Samuel Assis", "Julio C. S. Reis", "Ana Paula Couto da Silva", "Jussara M. Almeida", "Fabrício Benevenuto"], "venue": "Journal of Information and Data Management", "year": 2022, "type": "Periódico", "link": "https://doi.org/10.5753/jidm.2022.2354", "theme": "Saúde e desinformação", "bib": "@article{araujo2022factcenter,\n  title     = {A Comprehensive Dataset of {B}razilian Fact-Checking Stories},\n  author    = {de Ara{\\'u}jo, Igor Marques and Salles, Isadora and Couto, Jo{\\~a}o M. M. and Pimenta, Breno C. and Assis, Samuel and Reis, Julio C. S. and da Silva, Ana Paula Couto and Almeida, Jussara M. and Benevenuto, Fabr{\\'i}cio},\n  journal   = {Journal of Information and Data Management},\n  volume    = {13},\n  number    = {1},\n  pages     = {127--142},\n  year      = {2022},\n  doi       = {10.5753/jidm.2022.2354}\n}"}, {"key": "khatibi2022tourism", "title": "A quantitative analysis of the impact of explicit incorporation of recency, seasonality and model specialization into fine-grained tourism demand prediction models", "authors": ["Amir Khatibi", "Ana Paula Couto da Silva", "Jussara M. Almeida", "Marcos A. Gonçalves"], "venue": "PLOS ONE", "year": 2022, "type": "Periódico", "link": "https://doi.org/10.1371/journal.pone.0278112", "theme": "Outros domínios", "bib": "@article{khatibi2022tourism,\n  title     = {A quantitative analysis of the impact of explicit incorporation of recency, seasonality and model specialization into fine-grained tourism demand prediction models},\n  author    = {Khatibi, Amir and da Silva, Ana Paula Couto and Almeida, Jussara M. and Gon{\\c{c}}alves, Marcos A.},\n  journal   = {PLOS ONE},\n  volume    = {17},\n  number    = {12},\n  pages     = {e0278112},\n  year      = {2022},\n  doi       = {10.1371/journal.pone.0278112}\n}"}, {"key": "guimaraes2022analise", "title": "Análise de Propagandas Eleitorais Antecipadas no Twitter", "authors": ["Samuel Guimarães", "Márcio Silva", "Josemar Caetano", "Marcelo Araújo", "J. Santos", "Julio C. S. Reis", "Ana Paula Couto da Silva", "Fabrício Benevenuto", "Jussara Almeida"], "venue": "Anais do XI Brazilian Workshop on Social Network Analysis and Mining (BraSNAM)", "year": 2022, "type": "Conferência", "link": "https://doi.org/10.5753/brasnam.2022.222602", "theme": "Política e difusão de informação", "bib": "@inproceedings{guimaraes2022analise,\n  author    = {Guimar{\\~a}es, Samuel and Silva, M{\\'a}rcio and Caetano, Josemar and Ara{\\'u}jo, Marcelo and Santos, J. and Reis, Julio C. S. and da Silva, Ana Paula Couto and Benevenuto, Fabr{\\'i}cio and Almeida, Jussara},\n  title     = {An{\\'a}lise de Propagandas Eleitorais Antecipadas no {T}witter},\n  booktitle = {Anais do XI Brazilian Workshop on Social Network Analysis and Mining (BraSNAM)},\n  pages     = {85--96},\n  publisher = {SBC},\n  address   = {Niter{\\'o}i, RJ, Brasil},\n  year      = {2022},\n  doi       = {10.5753/brasnam.2022.222602}\n}"}, {"key": "oliveira2022coronavac", "title": "Caracterizando a difusão de desinformação sobre a vacina CoronaVac no Brasil", "authors": ["Gabriel P. Oliveira", "Beatriz F. Paiva", "Ana Paula Couto da Silva", "Mirella M. Moro"], "venue": "Anais do XI Brazilian Workshop on Social Network Analysis and Mining (BraSNAM)", "year": 2022, "type": "Conferência", "link": "https://doi.org/10.5753/brasnam.2022.223173", "theme": "Saúde e desinformação", "bib": "@inproceedings{oliveira2022coronavac,\n  author    = {Oliveira, Gabriel P. and Paiva, Beatriz F. and da Silva, Ana Paula Couto and Moro, Mirella M.},\n  title     = {Caracterizando a difus{\\~a}o de desinforma{\\c{c}}{\\~a}o sobre a vacina {C}orona{V}ac no {B}rasil},\n  booktitle = {Anais do XI Brazilian Workshop on Social Network Analysis and Mining (BraSNAM)},\n  pages     = {204--215},\n  publisher = {SBC},\n  address   = {Niter{\\'o}i, RJ, Brasil},\n  year      = {2022},\n  doi       = {10.5753/brasnam.2022.223173}\n}"}, {"key": "caetano2022characterizing", "title": "Characterizing Early Electoral Advertisements on Twitter: A Brazilian Case Study", "authors": ["Josemar Caetano", "Samuel Guimarães", "Marcelo M. R. Araújo", "Márcio Silva", "Julio C. S. Reis", "Ana Paula Couto da Silva", "Fabrício Benevenuto", "Jussara M. Almeida"], "venue": "Social Informatics (SocInfo 2022)", "year": 2022, "type": "Conferência", "link": "https://doi.org/10.1007/978-3-031-19097-1_16", "theme": "Política e difusão de informação", "bib": "@inproceedings{caetano2022characterizing,\n  author    = {Caetano, Josemar and Guimar{\\~a}es, Samuel and Ara{\\'u}jo, Marcelo M. R. and Silva, M{\\'a}rcio and Reis, Julio C. S. and da Silva, Ana Paula Couto and Benevenuto, Fabr{\\'i}cio and Almeida, Jussara M.},\n  title     = {Characterizing Early Electoral Advertisements on {T}witter: A {B}razilian Case Study},\n  booktitle = {Social Informatics (SocInfo 2022)},\n  series    = {Lecture Notes in Computer Science},\n  publisher = {Springer},\n  year      = {2022},\n  doi       = {10.1007/978-3-031-19097-1_16}\n}"}, {"key": "pagano_emocoes", "title": "Classificação de emoções: análise de fóruns de discussão online sobre diabetes", "authors": ["Adriana Pagano", "W. Maciel", "R. Oliveira Junior", "Y. B. Gumiel", "Ana Paula Couto da Silva"], "venue": "Congresso Brasileiro de Informática em Saúde (CBIS)", "year": 2022, "type": "Resumo", "link": "", "theme": "Saúde e desinformação", "bib": "@misc{pagano_emocoes,\n  author = {Pagano, Adriana and Maciel, W. and Oliveira Junior, R. and Gumiel, Y. B. and da Silva, Ana Paula Couto},\n  title  = {Classifica{\\c{c}}{\\~a}o de emo{\\c{c}}{\\~o}es: an{\\'a}lise de f{\\'o}runs de discuss{\\~a}o online sobre diabetes},\n  note   = {Ve{\\'i}culo e ano a confirmar}\n}"}, {"key": "locatelli2022correlations", "title": "Correlations between Web Searches and COVID-19 Epidemiological Indicators in Brazil", "authors": ["Marcelo Sartori Locatelli", "Evandro L. T. P. Cunha", "Janaína Guiginski", "Ramon A. S. Franco", "Tereza Bernardes", "Pedro Loures Alzamora", "Daniel Victor F. da Silva", "Marcelo Augusto S. Ganem", "Thiago H. M. Santos", "Anne I. R. Carvalho", "Leandro M. V. Souza", "Gabriela P. F. Paixão", "Elisa França Chaves", "Guilherme Bezerra dos Santos", "Rafael Vinícius dos Santos", "Amanda Cupertino de Freitas", "Matheus G. Flores", "Rachel F. Biezuner", "Rodolfo Lins Cardoso", "Ana Paula Couto da Silva"], "venue": "Brazilian Archives of Biology and Technology", "year": 2022, "type": "Periódico", "link": "https://www.scielo.br/j/babt/a/FN9Rwk4DpGDCRmPg8V9tkgL/?lang=en", "theme": "Saúde e desinformação", "bib": "@article{locatelli2022correlations,\n  title     = {Correlations between Web Searches and {COVID}-19 Epidemiological Indicators in {B}razil},\n  author    = {Locatelli, Marcelo Sartori and Cunha, Evandro L. T. P. and Guiginski, Jana{\\'i}na and Franco, Ramon A. S. and Bernardes, Tereza and Alzamora, Pedro Loures and da Silva, Daniel Victor F. and Ganem, Marcelo Augusto S. and Santos, Thiago H. M. and Carvalho, Anne I. R. and Souza, Leandro M. V. and Paix{\\~a}o, Gabriela P. F. and Chaves, Elisa Fran{\\c{c}}a and dos Santos, Guilherme Bezerra and dos Santos, Rafael Vin{\\'i}cius and de Freitas, Amanda Cupertino and Flores, Matheus G. and Biezuner, Rachel F. and Cardoso, Rodolfo Lins and da Silva, Ana Paula Couto},\n  journal   = {Brazilian Archives of Biology and Technology},\n  year      = {2022},\n  url       = {https://www.scielo.br/j/babt/a/FN9Rwk4DpGDCRmPg8V9tkgL/?lang=en}\n}"}, {"key": "franco2022covid", "title": "Covid Data Analytics Repository: An interdisciplinary look into the COVID-19 pandemic in Brazil", "authors": ["Ramon A. S. Franco", "Pedro Loures Alzamora", "Evandro L. T. P. Cunha", "Janaína Guiginski", "Tereza Bernardes", "Juan F. Galindo", "Luana Passos", "Raquel O. Prates", "Bruno Chagas", "Kícila Ferreguetti", "Luísa Cardoso", "Pedro Moreira", "Ana Paula Couto da Silva", "Wagner Meira Jr."], "venue": "Journal of Information and Data Management", "year": 2022, "type": "Periódico", "link": "https://doi.org/10.5753/jidm.2022.2266", "theme": "Saúde e desinformação", "bib": "@article{franco2022covid,\n  title     = {Covid Data Analytics Repository: An interdisciplinary look into the {COVID}-19 pandemic in {B}razil},\n  author    = {Franco, Ramon A. S. and Alzamora, Pedro Loures and Cunha, Evandro L. T. P. and Guiginski, Jana{\\'i}na and Bernardes, Tereza and Galindo, Juan F. and Passos, Luana and Prates, Raquel O. and Chagas, Bruno and Ferreguetti, K{\\'i}cila and Cardoso, Lu{\\'i}sa and Moreira, Pedro and da Silva, Ana Paula Couto and Meira Jr., Wagner},\n  journal   = {Journal of Information and Data Management},\n  volume    = {13},\n  number    = {1},\n  pages     = {6--19},\n  year      = {2022},\n  doi       = {10.5753/jidm.2022.2266}\n}"}, {"key": "araujo2022earlyad", "title": "EarlyAd: A System for Real-Time Surveillance of Brazilian Early Electoral Ads on Twitter", "authors": ["Marcelo M. R. Araújo", "Samuel S. Guimarães", "Márcio Silva", "Josemar Caetano", "Jonatas Santos", "Julio C. S. Reis", "Ana Paula Couto da Silva", "Fabrício Benevenuto", "Jussara M. Almeida"], "venue": "Proceedings of the 33rd ACM Conference on Hypertext and Social Media (HT)", "year": 2022, "type": "Conferência", "link": "", "theme": "Política e difusão de informação", "bib": "@inproceedings{araujo2022earlyad,\n  title     = {{EarlyAd}: A System for Real-Time Surveillance of {B}razilian Early Electoral Ads on {T}witter},\n  author    = {Ara{\\'u}jo, Marcelo M. R. and Guimar{\\~a}es, Samuel S. and Silva, M{\\'a}rcio and Caetano, Josemar and Santos, Jonatas and Reis, Julio C. S. and da Silva, Ana Paula Couto and Benevenuto, Fabr{\\'i}cio and Almeida, Jussara M.},\n  booktitle = {Proceedings of the 33rd ACM Conference on Hypertext and Social Media (HT)},\n  pages     = {225--227},\n  year      = {2022},\n  address   = {Barcelona, Spain},\n  publisher = {ACM}\n}"}, {"key": "araujo2022websites", "title": "Identificando Websites de Desinformação no Brasil", "authors": ["Leandro Araújo", "Luiz Felipe Nery", "Isadora C. Rodrigues", "João M. M. Couto", "Julio C. S. Reis", "Ana Paula Couto da Silva", "Jussara M. Almeida", "Fabrício Benevenuto"], "venue": "Anais do XXXVII Simpósio Brasileiro de Banco de Dados (SBBD)", "year": 2022, "type": "Conferência", "link": "https://doi.org/10.5753/sbbd.2022.225351", "theme": "Saúde e desinformação", "bib": "@inproceedings{araujo2022websites,\n  author    = {Ara{\\'u}jo, Leandro and Nery, Luiz Felipe and Rodrigues, Isadora C. and Couto, Jo{\\~a}o M. M. and Reis, Julio C. S. and da Silva, Ana Paula Couto and Almeida, Jussara M. and Benevenuto, Fabr{\\'i}cio},\n  title     = {Identificando Websites de Desinforma{\\c{c}}{\\~a}o no {B}rasil},\n  booktitle = {Anais do XXXVII Simp{\\'o}sio Brasileiro de Banco de Dados (SBBD)},\n  pages     = {355--360},\n  publisher = {SBC},\n  address   = {B{\\'u}zios, RJ, Brasil},\n  year      = {2022},\n  doi       = {10.5753/sbbd.2022.225351}\n}"}, {"key": "ferreira2022backbone", "title": "On network backbone extraction for modeling online collective behavior", "authors": ["Carlos Henrique Gomes Ferreira", "Fabricio Murai", "Ana Paula Couto da Silva", "Martino Trevisan", "Luca Vassio", "Idilio Drago", "Marco Mellia", "Jussara M. Almeida"], "venue": "PLOS ONE", "year": 2022, "type": "Periódico", "link": "https://doi.org/10.1371/journal.pone.0274218", "theme": "Métodos de redes", "bib": "@article{ferreira2022backbone,\n  title     = {On network backbone extraction for modeling online collective behavior},\n  author    = {Ferreira, Carlos Henrique Gomes and Murai, Fabricio and da Silva, Ana Paula Couto and Trevisan, Martino and Vassio, Luca and Drago, Idilio and Mellia, Marco and Almeida, Jussara M.},\n  journal   = {PLOS ONE},\n  volume    = {17},\n  number    = {9},\n  pages     = {e0274218},\n  year      = {2022},\n  doi       = {10.1371/journal.pone.0274218}\n}"}, {"key": "ferreira2023risk", "title": "Risk Perception and Misinformation in Brazilian Twitter during COVID-19 Infodemic", "authors": ["R. S. M. Ferreira", "Ana Paula Couto da Silva", "Fabricio Murai"], "venue": "IEEE International Conference on Social Computing and Networking (SocialCom)", "year": 2022, "type": "Conferência", "link": "", "theme": "Saúde e desinformação", "bib": "@misc{ferreira2023risk,\n  author = {Ferreira, R. S. M. and da Silva, Ana Paula Couto and Murai, Fabricio},\n  title  = {Risk Perception and Misinformation in {B}razilian {T}witter during {COVID}-19 Infodemic},\n  year   = {2023},\n  note   = {Ve{\\'i}culo a confirmar}\n}"}, {"key": "maciel2022odr", "title": "User Profile Characterization Within a Brazilian Online Dispute Resolution Platform", "authors": ["W. Maciel", "Y. B. Gumiel", "A. Pagano", "Ana Paula Couto da Silva"], "venue": "LatinX in Natural Language Processing Research Workshop", "year": 2022, "type": "Conferência", "link": "", "theme": "Outros domínios", "bib": "@inproceedings{maciel2022odr,\n  title     = {User Profile Characterization Within a {B}razilian Online Dispute Resolution Platform},\n  author    = {Maciel, W. and Gumiel, Y. B. and Pagano, A. and da Silva, Ana Paula Couto},\n  booktitle = {LatinX in Natural Language Processing Research Workshop},\n  year      = {2022},\n  address   = {Seattle, USA}\n}"}, {"key": "knochenhauer_answerability", "title": "Using weighted features to predict questions answerability in question and answer communities", "authors": ["Lucas Viana Knochenhauer", "Carina Friedrich Dorneles", "Daniel Dalip Hasan"], "venue": "", "year": 0, "type": "Outro", "link": "", "theme": "Outros domínios", "bib": "@misc{knochenhauer_answerability,\n  author = {Knochenhauer, Lucas Viana and Dorneles, Carina Friedrich and Hasan, Daniel Dalip},\n  title  = {Using weighted features to predict questions answerability in question and answer communities},\n  note   = {Ve{\\'i}culo e ano a confirmar}\n}"}];
+
+// ---------- tema claro/escuro (preferência guardada só neste navegador)
+(function(){
+  const root=document.documentElement, btn=document.getElementById('themebtn');
+  try{const t=localStorage.getItem('procores-theme'); if(t) root.dataset.theme=t;}catch(e){}
+  btn.addEventListener('click',()=>{
+    const dark = root.dataset.theme ? root.dataset.theme==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    root.dataset.theme = dark ? 'light' : 'dark';
+    try{localStorage.setItem('procores-theme',root.dataset.theme);}catch(e){}
+  });
+})();
+
+// ---------- rede com contágio SIR (animação do topo)
+(function(){
+  const cv=document.getElementById('net'), ctx=cv.getContext('2d');
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let W,H,nodes=[],edges=[],dpr=Math.max(1,window.devicePixelRatio||1);
+  const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  function build(){
+    W=cv.clientWidth;H=cv.clientHeight;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+    const n=Math.round(Math.min(110,Math.max(40,W*H/9000)));
+    nodes=Array.from({length:n},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.15,vy:(Math.random()-.5)*.15,s:0,t:0}));
+    edges=[];
+    nodes.forEach((a,i)=>{const d=nodes.map((b,j)=>[j,(a.x-b.x)**2+(a.y-b.y)**2]).filter(x=>x[0]!==i).sort((p,q)=>p[1]-q[1]).slice(0,3);d.forEach(([j])=>{if(!edges.some(e=>(e[0]===j&&e[1]===i)))edges.push([i,j]);});});
+    seed();
+  }
+  function seed(){nodes.forEach(n=>{n.s=0;n.t=0});for(let k=0;k<2;k++){const n=nodes[Math.floor(Math.random()*nodes.length)];n.s=1;n.t=0;}}
+  function step(){
+    const inf=nodes.map(n=>n.s===1);
+    edges.forEach(([i,j])=>{
+      if(inf[i]&&nodes[j].s===0&&Math.random()<.012){nodes[j].s=1;nodes[j].t=0;}
+      if(inf[j]&&nodes[i].s===0&&Math.random()<.012){nodes[i].s=1;nodes[i].t=0;}
+    });
+    nodes.forEach(n=>{if(n.s===1){n.t++; if(n.t>260){n.s=2;n.t=0;}} else if(n.s===2){n.t++; if(n.t>700){n.s=0;n.t=0;}}});
+    if(!nodes.some(n=>n.s===1)) seed();
+    nodes.forEach(n=>{n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1;});
+  }
+  function draw(){
+    const acc=css('--accent'),hot=css('--hot'),rec=css('--rec'),line=css('--line');
+    ctx.clearRect(0,0,W,H);
+    ctx.lineWidth=1;
+    edges.forEach(([i,j])=>{const a=nodes[i],b=nodes[j];ctx.strokeStyle=(a.s===1&&b.s===1)?hot:line;ctx.globalAlpha=(a.s===1&&b.s===1)?.55:.9;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();});
+    ctx.globalAlpha=1;
+    nodes.forEach(n=>{ctx.fillStyle=n.s===1?hot:n.s===2?rec:acc;ctx.beginPath();ctx.arc(n.x,n.y,n.s===1?4.2:3.2,0,Math.PI*2);ctx.fill();});
+  }
+  function loop(){step();draw();requestAnimationFrame(loop);}
+  build(); addEventListener('resize',()=>{clearTimeout(window.__rz);window.__rz=setTimeout(build,200);});
+  if(reduce){for(let k=0;k<200;k++)step();draw();} else loop();
+})();
+
+// ---------- publicações
+(function(){
+  const themes=[...new Set(PUBS.map(p=>p.theme))].sort();
+  const types=[...new Set(PUBS.map(p=>p.type))].sort();
+  const years=[...new Set(PUBS.map(p=>p.year).filter(Boolean))].sort((a,b)=>b-a);
+  const $=id=>document.getElementById(id);
+  types.forEach(t=>$('ftype').insertAdjacentHTML('beforeend',`<option>${t}</option>`));
+  years.forEach(y=>$('fyear').insertAdjacentHTML('beforeend',`<option>${y}</option>`));
+  let active=new Set();
+  const chips=$('chips');
+  themes.forEach(t=>{const b=document.createElement('button');b.className='chip';b.textContent=t;b.setAttribute('aria-pressed','false');
+    b.onclick=()=>{active.has(t)?active.delete(t):active.add(t);b.setAttribute('aria-pressed',active.has(t));render();};chips.appendChild(b);});
+  const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const norm=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+  function render(){
+    const q=norm($('q').value), ty=$('ftype').value, yr=$('fyear').value;
+    const list=PUBS.filter(p=>(!active.size||active.has(p.theme))&&(!ty||p.type===ty)&&(!yr||String(p.year)===yr)&&
+      (!q||norm(p.title+' '+p.authors.join(' ')+' '+p.venue).includes(q)));
+    $('count').textContent=`${list.length} de ${PUBS.length} publicações`;
+    $('publist').innerHTML=list.map((p,i)=>`<article class="pub">
+      <div class="t">${esc(p.title)}</div>
+      <div class="a">${esc(p.authors.join(', '))}</div>
+      <div class="v">${esc(p.venue)}${p.year?', '+p.year:''}</div>
+      <div class="meta"><span class="tag type">${esc(p.type)}</span><span class="tag">${esc(p.theme)}</span>
+      ${p.link?`<a class="linkbtn" href="${esc(p.link)}" target="_blank" rel="noopener">Acessar</a>`:''}
+      <button class="linkbtn" data-k="${esc(p.key)}" data-act="show">BibTeX</button>
+      <button class="linkbtn" data-k="${esc(p.key)}" data-act="copy">Copiar BibTeX</button></div>
+      <pre class="bib">${esc(p.bib)}</pre></article>`).join('');
+  }
+  $('publist').addEventListener('click',e=>{
+    const b=e.target.closest('button[data-act]'); if(!b) return;
+    const p=PUBS.find(x=>x.key===b.dataset.k);
+    if(b.dataset.act==='show'){b.closest('.pub').classList.toggle('open');}
+    else{ const done=()=>toast('BibTeX copiado');
+      (navigator.clipboard?navigator.clipboard.writeText(p.bib):Promise.reject()).then(done).catch(()=>{const t=document.createElement('textarea');t.value=p.bib;document.body.appendChild(t);t.select();try{document.execCommand('copy');done();}catch(_){}t.remove();});}
+  });
+  ['q','ftype','fyear'].forEach(id=>$(id).addEventListener('input',render));
+  function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1400);}
+  render();
+  // barras por tema
+  const counts=themes.map(t=>[t,PUBS.filter(p=>p.theme===t).length]).sort((a,b)=>b[1]-a[1]);
+  const max=Math.max(...counts.map(c=>c[1]));
+  $('themebars').innerHTML=counts.map(([t,c])=>`<div style="margin:10px 0">
+    <div style="display:flex;justify-content:space-between;font-size:.88rem"><span>${esc(t)}</span><b>${c}</b></div>
+    <div style="height:8px;background:var(--chip);border-radius:6px;margin-top:4px"><div style="height:100%;width:${c/max*100}%;background:var(--accent);border-radius:6px"></div></div></div>`).join('');
+})();
+</script>
+</body>
+</html>
